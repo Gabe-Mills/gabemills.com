@@ -560,3 +560,51 @@ group pad  p-6 sm:p-9     →  p-7 sm:p-10
 The inner top highlight (`inset 0 1px 0 rgba(255,255,255,0.07)`) is what makes a pill read as a
 bubble rather than an outlined rectangle with round ends — same trick as the smoked panels, at a
 smaller scale.
+
+---
+
+## Revision: unboxed — bubbles float on the field (11 Sep 2026)
+
+The GitHub and stack sections no longer sit in a card. Both `glass-smoked` panels are gone
+(verified: 0 panels remain in `#github` and `#stack`); everything floats directly on the
+constellation and swells when you touch it.
+
+### Why unboxing works here
+**Each bubble carries its own fill.** At chip scale the bubble *is* the panel — it brings the
+local contrast the wrapping card used to provide. That's the whole reason this is viable, and it's
+also the constraint: the fill can never go fully transparent, however light the design wants to
+feel, or the labels lose their ground and the lattice reads straight through them.
+
+`Bubble.tsx` is the single shared component, so hover behaviour, fill, border and the inner
+highlight can't drift between the three places bubbles appear.
+
+### Growth is a spring, not a duration
+`type: "spring", stiffness: 420, damping: 22, mass: 0.6` — measured 97.8×46 → 106.5×50.1 on hover,
+about 1.089×. A bubble easing linearly to a new size reads as a rectangle being scaled; the
+overshoot is what sells it as physical. Large bubbles (repos) grow less, 1.035×, because the same
+ratio on a big object looks like a layout jump rather than a swell. Everything collapses to no
+transform under `prefers-reduced-motion`.
+
+### The `.on-field` text rule
+With the panels gone, headings and small labels sit on a background made of glowing lines, and a
+field like that will cross any 10px mono label. `.on-field` in `index.css` applies a double
+shadow — tight for edge definition, wide for a local pool of dark — which buys legibility without
+painting a visible plate behind the text.
+
+**Every piece of text that is no longer on a panel needs this class.** That now includes the
+section headings, the handle, the tagline, the KB figure and the group counts.
+
+### The one thing that could not be unboxed
+**The language bar stays a single solid object.** It's a chart: segment widths are only comparable
+if they sit flush against one another, so it can't be broken into floating pieces without
+destroying the thing it measures. Its legend did become bubbles, which still satisfies the
+table-view requirement — each one carries the swatch, the name and the percentage.
+
+### Measured
+```
+width   height   overflowX   stack chips   github bubbles   bar segments
+1440     7,731       0            75             16              8
+ 700     4,768       0            75             16              8
+ 375     5,338       0            75             16              8
+```
+No console errors at any width.

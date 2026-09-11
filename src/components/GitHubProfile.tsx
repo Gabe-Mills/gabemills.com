@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import Bubble from "./Bubble";
 import {
   profile,
   repos,
@@ -19,235 +20,252 @@ const pct = (bytes: number) => (bytes / totalBytes) * 100;
 const fmtPct = (n: number) => (n >= 10 ? n.toFixed(0) : n.toFixed(1));
 
 /**
- * The GitHub section. Sits ABOVE the site previews — the code is the lead now.
+ * GitHub — unboxed. No card; everything floats on the constellation.
  *
- * The language bar is a real chart of real data: byte counts summed across every
- * public repo. Colours are the validated dark-mode categorical slots assigned in
- * fixed order (see DESIGN.md), NOT the site's ember accent — a categorical scale
- * needs separable hues, and seven warm ones would fail CVD separation outright.
- * Text stays on text tokens throughout; the coloured swatch beside a label is
- * what carries identity, so nothing depends on colour alone.
+ * The one thing that could NOT be unboxed is the language bar. It's a chart:
+ * the segments have to sit flush against each other for their widths to be
+ * comparable, so it stays a single solid object. Its legend, though, becomes
+ * bubbles — which still satisfies the table-view requirement, since every row
+ * carries the name and the percentage alongside its swatch.
  */
 export default function GitHubProfile() {
   const [hover, setHover] = useState<string | null>(null);
+  const reduced = useReducedMotion();
 
   return (
     <section
       id="github"
-      className="relative z-10 scroll-mt-28 px-5 pb-10 pt-24 md:pb-14 md:pt-36"
+      className="relative z-10 scroll-mt-28 px-5 pb-16 pt-24 md:pb-24 md:pt-36"
       aria-label="GitHub"
     >
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 md:gap-20">
+        {/* ---- identity ---- */}
         <motion.div
-          initial={{ opacity: 0, y: 26 }}
+          initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="glass-smoked edge-lit overflow-hidden rounded-[14px]"
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-6 sm:gap-8"
         >
-          {/* ---- identity ---- */}
-          <div className="flex items-center gap-6 p-6 sm:gap-8 sm:p-9">
-            <div className="relative shrink-0">
-              <div
-                className="absolute -inset-2 rounded-full opacity-70 blur-xl"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(255,140,60,0.5), rgba(228,105,44,0) 70%)",
-                }}
-              />
-              <img
-                src="/github-avatar.png"
-                alt="Gabe Mills"
-                width={96}
-                height={96}
-                className="relative h-[68px] w-[68px] rounded-full object-cover ring-1 ring-[rgba(255,200,150,0.35)] sm:h-[84px] sm:w-[84px]"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+          <motion.a
+            href={profile.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${profile.handle} on GitHub`}
+            whileHover={reduced ? undefined : { scale: 1.06 }}
+            transition={{ type: "spring", stiffness: 380, damping: 20 }}
+            className="relative shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E] focus-visible:ring-offset-4 focus-visible:ring-offset-bg"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute -inset-3 rounded-full blur-xl"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(255,140,60,0.55), rgba(228,105,44,0) 70%)",
+              }}
+            />
+            <img
+              src="/github-avatar.png"
+              alt="Gabe Mills"
+              width={96}
+              height={96}
+              className="relative h-[76px] w-[76px] rounded-full object-cover ring-1 ring-[rgba(255,200,150,0.4)] sm:h-[92px] sm:w-[92px]"
+              loading="lazy"
+              decoding="async"
+            />
+          </motion.a>
 
-            <div className="min-w-0 flex-1">
-              <a
-                href={profile.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E] focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-              >
-                <svg viewBox="0 0 16 16" className="h-[19px] w-[19px] shrink-0 fill-current text-text-primary" aria-hidden="true">
-                  <path d={GH_MARK} />
-                </svg>
-                <span className="truncate font-mono text-[16px] tracking-tight text-text-primary transition-colors group-hover:text-[#FFB15E] sm:text-[18px]">
-                  {profile.handle}
-                </span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5">
-                  <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </a>
-              <p className="mt-2 max-w-prose text-[14px] leading-relaxed text-muted sm:text-[15px]">
-                {profile.tagline}
-              </p>
-            </div>
+          <div className="min-w-0 flex-1">
+            <a
+              href={profile.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
+            >
+              <svg viewBox="0 0 16 16" className="h-5 w-5 shrink-0 fill-current text-text-primary" aria-hidden="true">
+                <path d={GH_MARK} />
+              </svg>
+              <span className="on-field truncate font-mono text-[17px] tracking-tight text-text-primary transition-colors group-hover:text-[#FFB15E] sm:text-[19px]">
+                {profile.handle}
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5">
+                <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+            <p className="on-field mt-2.5 max-w-prose text-[14.5px] leading-relaxed text-text-primary/75 sm:text-[15.5px]">
+              {profile.tagline}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* ---- language composition ---- */}
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2 className="on-field font-mono text-[11px] uppercase tracking-[0.24em] text-text-primary/75">
+              Language composition
+            </h2>
+            <span className="on-field font-mono text-[11px] tracking-[0.08em] text-muted/80 [font-variant-numeric:tabular-nums]">
+              {Math.round(totalBytes / 1024)} KB across {repoCount} repos
+            </span>
           </div>
 
-          {/* ---- language composition ---- */}
-          <div className="border-t border-white/[0.07] p-6 sm:p-9">
-            <div className="flex items-baseline justify-between gap-3">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
-                Language composition
-              </h2>
-              <span className="font-mono text-[10px] tracking-[0.1em] text-muted [font-variant-numeric:tabular-nums]">
-                {Math.round(totalBytes / 1024)} KB across {repoCount} repos
-              </span>
-            </div>
-
-            {/* stacked bar — 7 slots plus the aggregated tail. Eight segments is
-                the ceiling: the validated palette has eight slots and a ninth hue
-                can't be invented without breaking colourblind separation. */}
-            <div
-              className="mt-5 flex h-3 w-full gap-[2px] overflow-hidden rounded-full"
-              role="img"
-              aria-label={`Language composition across ${repoCount} repositories: ${languages
-                .map((l) => `${l.name} ${fmtPct(pct(l.bytes))}%`)
-                .join(", ")}`}
-            >
-              {majorLanguages.map((l, i) => (
-                <div
-                  key={l.name}
-                  onMouseEnter={() => setHover(l.name)}
-                  onMouseLeave={() => setHover(null)}
-                  className="h-full transition-opacity duration-200"
-                  style={{
-                    width: `${pct(l.bytes)}%`,
-                    background: l.color,
-                    opacity: hover && hover !== l.name ? 0.3 : 1,
-                    borderRadius: i === 0 ? "999px 3px 3px 999px" : "3px",
-                  }}
-                />
-              ))}
+          {/* The chart stays one solid object — segment widths are only
+              comparable if they sit flush, so this is the one thing here that
+              can't float free. */}
+          <div
+            className="mt-6 flex h-3.5 w-full gap-[2px] overflow-hidden rounded-full"
+            style={{ boxShadow: "0 8px 24px -10px rgba(4,3,3,0.85)" }}
+            role="img"
+            aria-label={`Language composition across ${repoCount} repositories: ${languages
+              .map((l) => `${l.name} ${fmtPct(pct(l.bytes))}%`)
+              .join(", ")}`}
+          >
+            {majorLanguages.map((l, i) => (
               <div
-                onMouseEnter={() => setHover("Other")}
+                key={l.name}
+                onMouseEnter={() => setHover(l.name)}
                 onMouseLeave={() => setHover(null)}
                 className="h-full transition-opacity duration-200"
                 style={{
-                  width: `${pct(otherBytes)}%`,
-                  background: OTHER_COLOR,
-                  opacity: hover && hover !== "Other" ? 0.3 : 1,
-                  borderRadius: "3px 999px 999px 3px",
+                  width: `${pct(l.bytes)}%`,
+                  background: l.color,
+                  opacity: hover && hover !== l.name ? 0.28 : 1,
+                  borderRadius: i === 0 ? "999px 3px 3px 999px" : "3px",
                 }}
               />
-            </div>
-
-            {/* legend doubles as the table view — every language on the profile
-                is named here, including the ones sharing the Other segment, so
-                nothing is hidden and identity never depends on colour alone */}
-            <ul className="mt-7 grid grid-cols-2 gap-x-8 gap-y-3.5 sm:grid-cols-3">
-              {majorLanguages.map((l) => (
-                <li
-                  key={l.name}
-                  onMouseEnter={() => setHover(l.name)}
-                  onMouseLeave={() => setHover(null)}
-                  className="flex items-center gap-2.5 transition-opacity duration-200"
-                  style={{ opacity: hover && hover !== l.name ? 0.4 : 1 }}
-                >
-                  <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-sm" style={{ background: l.color }} />
-                  <span className="min-w-0 flex-1 truncate text-[13px] text-text-primary/90">{l.name}</span>
-                  <span className="font-mono text-[12px] text-muted [font-variant-numeric:tabular-nums]">
-                    {fmtPct(pct(l.bytes))}%
-                  </span>
-                </li>
-              ))}
-              <li
-                onMouseEnter={() => setHover("Other")}
-                onMouseLeave={() => setHover(null)}
-                className="flex items-center gap-2.5 transition-opacity duration-200"
-                style={{ opacity: hover && hover !== "Other" ? 0.4 : 1 }}
-              >
-                <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-sm" style={{ background: OTHER_COLOR }} />
-                <span className="min-w-0 flex-1 truncate text-[13px] text-text-primary/90">Other</span>
-                <span className="font-mono text-[12px] text-muted [font-variant-numeric:tabular-nums]">
-                  {fmtPct(pct(otherBytes))}%
-                </span>
-              </li>
-            </ul>
-
-            {/* the tail, named */}
-            <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/[0.06] pt-4">
-              {minorLanguages.map((l) => (
-                <li key={l.name} className="flex items-center gap-1.5">
-                  <span
-                    aria-hidden="true"
-                    className="h-1.5 w-1.5 shrink-0 rounded-sm opacity-60"
-                    style={{ background: OTHER_COLOR }}
-                  />
-                  <span className="text-[12px] text-muted">{l.name}</span>
-                  <span className="font-mono text-[11px] text-muted/70 [font-variant-numeric:tabular-nums]">
-                    {fmtPct(pct(l.bytes))}%
-                  </span>
-                </li>
-              ))}
-            </ul>
+            ))}
+            <div
+              onMouseEnter={() => setHover("Other")}
+              onMouseLeave={() => setHover(null)}
+              className="h-full transition-opacity duration-200"
+              style={{
+                width: `${pct(otherBytes)}%`,
+                background: OTHER_COLOR,
+                opacity: hover && hover !== "Other" ? 0.28 : 1,
+                borderRadius: "3px 999px 999px 3px",
+              }}
+            />
           </div>
 
-          {/* ---- repos ---- */}
-          <div className="border-t border-white/[0.07] p-6 sm:p-9">
-            <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
-              Public repositories
-            </h2>
-            <ul className="mt-6 grid gap-3.5">
-              {repos.map((r) => {
-                const lang = languages.find((l) => l.name === r.langKey);
-                return (
-                  <li key={r.name}>
-                    <a
-                      href={r.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-4 rounded-[8px] border border-white/[0.07] bg-white/[0.02] px-5 py-4 transition-colors hover:border-[rgba(255,177,94,0.4)] hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span
-                            aria-hidden="true"
-                            className="h-2 w-2 shrink-0 rounded-full"
-                            style={{ background: lang?.color ?? "#9085e9" }}
-                          />
-                          <span className="truncate font-mono text-[13.5px] text-text-primary">
-                            {r.name}
-                          </span>
-                          <span className="shrink-0 font-mono text-[10.5px] text-muted">
-                            {r.language}
-                          </span>
-                        </div>
-                        <p className="mt-1.5 truncate text-[13px] text-muted">
-                          {r.description}
-                        </p>
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          {r.topics.slice(0, 4).map((tp) => (
-                            <span
-                              key={tp}
-                              className="rounded-full border border-white/[0.08] px-2 py-0.5 font-mono text-[9.5px] tracking-[0.04em] text-muted"
-                            >
-                              {tp}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+          {/* legend as bubbles — still the table view: swatch, name, value */}
+          <ul className="mt-7 flex flex-wrap gap-3">
+            {majorLanguages.map((l) => (
+              <li
+                key={l.name}
+                onMouseEnter={() => setHover(l.name)}
+                onMouseLeave={() => setHover(null)}
+                style={{ opacity: hover && hover !== l.name ? 0.45 : 1, transition: "opacity 200ms" }}
+              >
+                <Bubble accent={l.color}>
+                  <span className="whitespace-nowrap font-mono text-[12.5px] text-text-primary/90">
+                    {l.name}{" "}
+                    <span className="text-muted [font-variant-numeric:tabular-nums]">
+                      {fmtPct(pct(l.bytes))}%
+                    </span>
+                  </span>
+                </Bubble>
+              </li>
+            ))}
+            <li
+              onMouseEnter={() => setHover("Other")}
+              onMouseLeave={() => setHover(null)}
+              style={{ opacity: hover && hover !== "Other" ? 0.45 : 1, transition: "opacity 200ms" }}
+            >
+              <Bubble accent={OTHER_COLOR}>
+                <span className="whitespace-nowrap font-mono text-[12.5px] text-text-primary/90">
+                  Other{" "}
+                  <span className="text-muted [font-variant-numeric:tabular-nums]">
+                    {fmtPct(pct(otherBytes))}%
+                  </span>
+                </span>
+              </Bubble>
+            </li>
+          </ul>
+
+          {/* the tail, named — smaller bubbles, same system */}
+          <ul className="mt-3 flex flex-wrap gap-2.5">
+            {minorLanguages.map((l) => (
+              <li key={l.name}>
+                <Bubble accent={OTHER_COLOR} className="!px-3 !py-1.5 opacity-80">
+                  <span className="whitespace-nowrap font-mono text-[11px] text-muted">
+                    {l.name}{" "}
+                    <span className="[font-variant-numeric:tabular-nums]">{fmtPct(pct(l.bytes))}%</span>
+                  </span>
+                </Bubble>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+
+        {/* ---- repos ---- */}
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h2 className="on-field font-mono text-[11px] uppercase tracking-[0.24em] text-text-primary/75">
+            Public repositories
+          </h2>
+          <ul className="mt-6 flex flex-wrap gap-4">
+            {repos.map((r) => {
+              const lang = languages.find((l) => l.name === r.langKey);
+              const tint = lang?.color ?? OTHER_COLOR;
+              return (
+                <li key={r.name}>
+                  <motion.a
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={reduced ? undefined : { scale: 1.035 }}
+                    whileTap={reduced ? undefined : { scale: 0.99 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 22, mass: 0.6 }}
+                    className="group flex max-w-full flex-col rounded-[22px] border px-5 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E] focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                    style={{
+                      borderColor: `${tint}4D`,
+                      background: `${tint}12`,
+                      boxShadow:
+                        "inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 26px -12px rgba(4,3,3,0.8)",
+                      backdropFilter: "blur(6px)",
+                      WebkitBackdropFilter: "blur(6px)",
+                    }}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span
+                        aria-hidden="true"
+                        className="h-2 w-2 shrink-0 rounded-full"
+                        style={{ background: tint, boxShadow: `0 0 8px ${tint}99` }}
+                      />
+                      <span className="truncate font-mono text-[13.5px] text-text-primary">
+                        {r.name}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10.5px] text-muted">
+                        {r.language}
+                      </span>
                       <svg
-                        width="13"
-                        height="13"
+                        width="12"
+                        height="12"
                         viewBox="0 0 24 24"
                         fill="none"
                         aria-hidden="true"
-                        className="shrink-0 text-muted transition-all group-hover:translate-x-0.5 group-hover:text-text-primary"
+                        className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
                       >
-                        <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+                    </span>
+                    <span className="mt-1.5 max-w-[30ch] text-[13px] leading-snug text-muted">
+                      {r.description}
+                    </span>
+                  </motion.a>
+                </li>
+              );
+            })}
+          </ul>
         </motion.div>
       </div>
     </section>

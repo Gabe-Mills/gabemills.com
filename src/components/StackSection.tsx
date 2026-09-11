@@ -1,87 +1,67 @@
 import { motion } from "framer-motion";
+import Bubble from "./Bubble";
 import { stack } from "../data/stack";
 
 /**
- * The five groups from Gabe's GitHub profile README, rendered as chip rows.
+ * The five groups from Gabe's profile README — unboxed.
  *
- * Chips are ember by default because the README's own badges are #C4783A, which
- * is already the site accent — so the default case needs no translation. Only
- * the items he gave explicit brand colours carry a coloured dot, which is what
- * makes the Anthropic / OpenAI / NVIDIA groupings readable at a glance. If
- * every chip were coloured none of them would mean anything.
+ * There is no card. Each bubble floats directly on the constellation and grows
+ * when you touch it. Headings wear `.on-field` because once the panel is gone
+ * a 10px mono label has a lattice of glowing lines running through it.
  */
 export default function StackSection() {
   return (
     <section
       id="stack"
-      className="relative z-10 scroll-mt-28 px-5 pb-24 md:pb-36"
+      className="relative z-10 scroll-mt-28 px-5 pb-28 md:pb-40"
       aria-label="Stack"
     >
-      <div className="mx-auto w-full max-w-3xl">
-        <div className="glass-smoked edge-lit overflow-hidden rounded-[14px]">
-          {stack.map((group, gi) => (
-            <motion.div
-              key={group.title}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, delay: Math.min(gi * 0.06, 0.3), ease: [0.22, 1, 0.36, 1] }}
-              className={`p-7 sm:p-10 ${gi > 0 ? "border-t border-white/[0.07]" : ""}`}
-            >
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
-                  {group.title}
-                </h2>
-                {group.link && (
-                  <>
-                    <span aria-hidden="true" className="font-mono text-[10px] text-muted/50">
-                      ·
-                    </span>
-                    <a
-                      href={group.link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-[10.5px] text-[#FFB15E] underline decoration-[rgba(255,177,94,0.35)] underline-offset-[3px] transition-colors hover:decoration-[rgba(255,177,94,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
-                    >
-                      {group.link.label}
-                    </a>
-                  </>
-                )}
-                <span className="ml-auto font-mono text-[10px] text-muted/60 [font-variant-numeric:tabular-nums]">
-                  {group.items.length}
-                </span>
-              </div>
-
-              <ul className="mt-6 flex flex-wrap gap-2.5 sm:gap-3">
-                {group.items.map((item) => (
-                  <li
-                    key={item.label}
-                    className="flex items-center gap-2.5 rounded-full border px-4 py-2.5 transition-colors"
-                    style={{
-                      borderColor: item.accent ? `${item.accent}55` : "rgba(255,177,94,0.22)",
-                      background: item.accent ? `${item.accent}14` : "rgba(255,177,94,0.06)",
-                      // top inner highlight — what makes a pill read as a bubble
-                      // rather than as a flat outlined rectangle with round ends
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
-                    }}
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 md:gap-20">
+        {stack.map((group, gi) => (
+          <motion.div
+            key={group.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-70px" }}
+            transition={{ duration: 0.65, delay: Math.min(gi * 0.05, 0.25), ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h2 className="on-field font-mono text-[11px] uppercase tracking-[0.24em] text-text-primary/75">
+                {group.title}
+              </h2>
+              {group.link && (
+                <>
+                  <span aria-hidden="true" className="on-field font-mono text-[11px] text-muted/60">
+                    ·
+                  </span>
+                  <a
+                    href={group.link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="on-field font-mono text-[11px] text-[#FFB15E] underline decoration-[rgba(255,177,94,0.4)] underline-offset-[3px] transition-colors hover:decoration-[rgba(255,177,94,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
                   >
-                    <span
-                      aria-hidden="true"
-                      className="h-2 w-2 shrink-0 rounded-full"
-                      style={{
-                        background: item.accent ?? "#E4692C",
-                        boxShadow: `0 0 7px ${item.accent ?? "#E4692C"}88`,
-                      }}
-                    />
+                    {group.link.label}
+                  </a>
+                </>
+              )}
+              <span className="on-field ml-auto font-mono text-[11px] text-muted/70 [font-variant-numeric:tabular-nums]">
+                {group.items.length}
+              </span>
+            </div>
+
+            <ul className="mt-6 flex flex-wrap gap-3">
+              {group.items.map((item) => (
+                <li key={item.label}>
+                  <Bubble accent={item.accent}>
                     <span className="whitespace-nowrap font-mono text-[12.5px] tracking-[0.01em] text-text-primary/90">
                       {item.label}
                     </span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
+                  </Bubble>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
