@@ -12,7 +12,7 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
   return (
     <section
       id="top"
-      className="relative flex w-full flex-col items-center justify-center overflow-hidden px-5 pb-20 pt-32 sm:pb-24 sm:pt-36 md:min-h-[88vh] md:pb-28 md:pt-40"
+      className="relative flex w-full flex-col items-center justify-center overflow-hidden px-5 pb-28 pt-36 sm:pb-32 sm:pt-40 md:min-h-[92vh] md:pb-36 md:pt-44"
     >
       {/* Local quiet ground for the type block. The contour field is at its densest
           exactly where the wordmark sits, and lines crossing the letter counters

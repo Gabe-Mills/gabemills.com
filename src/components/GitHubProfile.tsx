@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { profile, repos, languages, totalBytes } from "../data/github";
+import {
+  profile,
+  repos,
+  languages,
+  majorLanguages,
+  minorLanguages,
+  otherBytes,
+  totalBytes,
+  repoCount,
+  OTHER_COLOR,
+} from "../data/github";
 
 const GH_MARK =
   "M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.05-.13-.36-.95.08-1.98 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.03.13 1.85.08 1.98.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A7.995 7.995 0 0 0 16 8c0-4.42-3.58-8-8-8z";
@@ -24,7 +34,7 @@ export default function GitHubProfile() {
   return (
     <section
       id="github"
-      className="relative z-10 scroll-mt-24 px-5 py-16 md:py-24"
+      className="relative z-10 scroll-mt-28 px-5 py-24 md:py-36"
       aria-label="GitHub"
     >
       <div className="mx-auto w-full max-w-3xl">
@@ -36,7 +46,7 @@ export default function GitHubProfile() {
           className="glass-smoked edge-lit overflow-hidden rounded-[14px]"
         >
           {/* ---- identity ---- */}
-          <div className="flex items-center gap-5 p-5 sm:gap-6 sm:p-7">
+          <div className="flex items-center gap-6 p-6 sm:gap-8 sm:p-9">
             <div className="relative shrink-0">
               <div
                 className="absolute -inset-2 rounded-full opacity-70 blur-xl"
@@ -80,25 +90,27 @@ export default function GitHubProfile() {
           </div>
 
           {/* ---- language composition ---- */}
-          <div className="border-t border-white/[0.07] p-5 sm:p-7">
+          <div className="border-t border-white/[0.07] p-6 sm:p-9">
             <div className="flex items-baseline justify-between gap-3">
               <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
                 Language composition
               </h2>
               <span className="font-mono text-[10px] tracking-[0.1em] text-muted [font-variant-numeric:tabular-nums]">
-                {Math.round(totalBytes / 1024)} KB across {repos.length + 1} repos
+                {Math.round(totalBytes / 1024)} KB across {repoCount} repos
               </span>
             </div>
 
-            {/* stacked bar — 2px surface gaps between segments, rounded outer ends */}
+            {/* stacked bar — 7 slots plus the aggregated tail. Eight segments is
+                the ceiling: the validated palette has eight slots and a ninth hue
+                can't be invented without breaking colourblind separation. */}
             <div
-              className="mt-4 flex h-3 w-full gap-[2px] overflow-hidden rounded-full"
+              className="mt-5 flex h-3 w-full gap-[2px] overflow-hidden rounded-full"
               role="img"
-              aria-label={`Language composition: ${languages
+              aria-label={`Language composition across ${repoCount} repositories: ${languages
                 .map((l) => `${l.name} ${fmtPct(pct(l.bytes))}%`)
                 .join(", ")}`}
             >
-              {languages.map((l, i) => (
+              {majorLanguages.map((l, i) => (
                 <div
                   key={l.name}
                   onMouseEnter={() => setHover(l.name)}
@@ -108,20 +120,28 @@ export default function GitHubProfile() {
                     width: `${pct(l.bytes)}%`,
                     background: l.color,
                     opacity: hover && hover !== l.name ? 0.3 : 1,
-                    borderRadius:
-                      i === 0
-                        ? "999px 3px 3px 999px"
-                        : i === languages.length - 1
-                        ? "3px 999px 999px 3px"
-                        : "3px",
+                    borderRadius: i === 0 ? "999px 3px 3px 999px" : "3px",
                   }}
                 />
               ))}
+              <div
+                onMouseEnter={() => setHover("Other")}
+                onMouseLeave={() => setHover(null)}
+                className="h-full transition-opacity duration-200"
+                style={{
+                  width: `${pct(otherBytes)}%`,
+                  background: OTHER_COLOR,
+                  opacity: hover && hover !== "Other" ? 0.3 : 1,
+                  borderRadius: "3px 999px 999px 3px",
+                }}
+              />
             </div>
 
-            {/* legend doubles as the table view — identity never colour-alone */}
-            <ul className="mt-5 grid grid-cols-2 gap-x-6 gap-y-2.5 sm:grid-cols-3">
-              {languages.map((l) => (
+            {/* legend doubles as the table view — every language on the profile
+                is named here, including the ones sharing the Other segment, so
+                nothing is hidden and identity never depends on colour alone */}
+            <ul className="mt-7 grid grid-cols-2 gap-x-8 gap-y-3.5 sm:grid-cols-3">
+              {majorLanguages.map((l) => (
                 <li
                   key={l.name}
                   onMouseEnter={() => setHover(l.name)}
@@ -129,15 +149,38 @@ export default function GitHubProfile() {
                   className="flex items-center gap-2.5 transition-opacity duration-200"
                   style={{ opacity: hover && hover !== l.name ? 0.4 : 1 }}
                 >
+                  <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-sm" style={{ background: l.color }} />
+                  <span className="min-w-0 flex-1 truncate text-[13px] text-text-primary/90">{l.name}</span>
+                  <span className="font-mono text-[12px] text-muted [font-variant-numeric:tabular-nums]">
+                    {fmtPct(pct(l.bytes))}%
+                  </span>
+                </li>
+              ))}
+              <li
+                onMouseEnter={() => setHover("Other")}
+                onMouseLeave={() => setHover(null)}
+                className="flex items-center gap-2.5 transition-opacity duration-200"
+                style={{ opacity: hover && hover !== "Other" ? 0.4 : 1 }}
+              >
+                <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-sm" style={{ background: OTHER_COLOR }} />
+                <span className="min-w-0 flex-1 truncate text-[13px] text-text-primary/90">Other</span>
+                <span className="font-mono text-[12px] text-muted [font-variant-numeric:tabular-nums]">
+                  {fmtPct(pct(otherBytes))}%
+                </span>
+              </li>
+            </ul>
+
+            {/* the tail, named */}
+            <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/[0.06] pt-4">
+              {minorLanguages.map((l) => (
+                <li key={l.name} className="flex items-center gap-1.5">
                   <span
                     aria-hidden="true"
-                    className="h-2 w-2 shrink-0 rounded-sm"
-                    style={{ background: l.color }}
+                    className="h-1.5 w-1.5 shrink-0 rounded-sm opacity-60"
+                    style={{ background: OTHER_COLOR }}
                   />
-                  <span className="min-w-0 flex-1 truncate text-[13px] text-text-primary/90">
-                    {l.name}
-                  </span>
-                  <span className="font-mono text-[12px] text-muted [font-variant-numeric:tabular-nums]">
+                  <span className="text-[12px] text-muted">{l.name}</span>
+                  <span className="font-mono text-[11px] text-muted/70 [font-variant-numeric:tabular-nums]">
                     {fmtPct(pct(l.bytes))}%
                   </span>
                 </li>
@@ -146,11 +189,11 @@ export default function GitHubProfile() {
           </div>
 
           {/* ---- repos ---- */}
-          <div className="border-t border-white/[0.07] p-5 sm:p-7">
+          <div className="border-t border-white/[0.07] p-6 sm:p-9">
             <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
               Public repositories
             </h2>
-            <ul className="mt-4 grid gap-2.5">
+            <ul className="mt-6 grid gap-3.5">
               {repos.map((r) => {
                 const lang = languages.find((l) => l.name === r.langKey);
                 return (
@@ -159,7 +202,7 @@ export default function GitHubProfile() {
                       href={r.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-4 rounded-[8px] border border-white/[0.07] bg-white/[0.02] px-4 py-3 transition-colors hover:border-[rgba(255,177,94,0.4)] hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
+                      className="group flex items-center gap-4 rounded-[8px] border border-white/[0.07] bg-white/[0.02] px-5 py-4 transition-colors hover:border-[rgba(255,177,94,0.4)] hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">

@@ -5,7 +5,7 @@
  */
 export default function SiteFooter() {
   return (
-    <footer className="relative z-10 border-t border-white/8 px-5 py-10">
+    <footer className="relative z-10 border-t border-white/8 px-5 py-16">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4">
         <span className="font-mono text-[12px] font-semibold tracking-tight text-text-primary">
           Gabe Mills

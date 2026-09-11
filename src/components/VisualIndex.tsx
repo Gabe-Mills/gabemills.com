@@ -16,10 +16,10 @@ export default function VisualIndex() {
   return (
     <section
       id="builds"
-      className="relative z-10 scroll-mt-24 overflow-hidden px-5 py-16 md:py-24"
+      className="relative z-10 scroll-mt-28 overflow-hidden px-5 py-24 md:py-36"
       aria-label="Builds"
     >
-      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-10 md:gap-12">
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-20 md:gap-28">
         {projects.map((p, i) => (
           <Tile key={p.id} project={p} index={i} />
         ))}

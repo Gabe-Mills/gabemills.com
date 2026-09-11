@@ -430,3 +430,44 @@ nodes within an 11%-of-viewport band outward, scaled by each sheet's depth. Also
 way a fast lens fringes a bright point. Additive blending fuses the cores back to near-white.
 
 61 fps at 1440×900 and 375×812, no console errors.
+
+---
+
+## Revision: repo public, data refreshed, more air (11 Sep 2026)
+
+**The project is now a git repo**, pushed public to `github.com/Gabe-Mills/gabemills.com`.
+Checked before publishing: no hardcoded secrets anywhere — every credential in `support/`
+(Discord bot token, Supabase keys, Apple auth) is read from a Cloudflare env binding.
+`.gitignore` excludes `node_modules`, `.next` (436MB of abandoned Next.js build cache), `dist`,
+`.wrangler`, the `_backup-src-*` and `_unused-screenshots` working folders, and `.claude`
+(a third-party skill bundle, not site code). 66 files tracked.
+
+**That push invalidated the site's own data**, which is worth noting as a pattern: publishing the
+repo moved the public repo count 4 → 5 and changed the language mix enough to matter —
+TypeScript 28% → 36%, and JavaScript overtook both Astro and Swift. Baked data has to be
+refreshed whenever the repo list changes.
+
+### Every language now appears
+He asked for everything that's on the GitHub profile, so all **11** languages are named. The bar
+still has only **8 segments**, and that split is the design, not a shortcut:
+
+- 7 languages get their own validated slot; the remaining 4 (Shell, C, HTML, Ruby — 3.2% combined)
+  share the eighth, "Other".
+- All 4 are then itemised by name and percentage in a row beneath the legend, so nothing is hidden.
+- Eight is the hard ceiling: the validated palette has eight slots and a ninth hue cannot be
+  invented without breaking colourblind separation. Re-validated at 8 slots against `#120D0C` —
+  all five checks pass, worst adjacent CVD ΔE 8.4 protan / 8.7 tritan, normal-vision 19.3.
+
+### Spacing opened up
+```
+sections      py-16 md:py-24  →  py-24 md:py-36
+hero          pb-20 pt-32     →  pb-28 pt-36   (md:min-h 88vh → 92vh)
+GitHub card   p-5 sm:p-7      →  p-6 sm:p-9
+legend        gap-y-2.5       →  gap-y-3.5, gap-x-6 → gap-x-8
+repo list     gap-2.5         →  gap-3.5, rows px-4 py-3 → px-5 py-4
+tile stack    gap-10 md:12    →  gap-20 md:28
+footer        py-10           →  py-16
+scroll-mt     24              →  28  (anchor offsets follow the new rhythm)
+```
+Page height 5,935 → 6,621 desktop and 2,398 → 3,038 mobile. The tiles themselves stayed small —
+more space between them, not bigger previews.
