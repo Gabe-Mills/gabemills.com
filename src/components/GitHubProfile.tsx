@@ -34,7 +34,7 @@ export default function GitHubProfile() {
   return (
     <section
       id="github"
-      className="relative z-10 scroll-mt-28 px-5 py-24 md:py-36"
+      className="relative z-10 scroll-mt-28 px-5 pb-10 pt-24 md:pb-14 md:pt-36"
       aria-label="GitHub"
     >
       <div className="mx-auto w-full max-w-3xl">

@@ -471,3 +471,55 @@ scroll-mt     24              →  28  (anchor offsets follow the new rhythm)
 ```
 Page height 5,935 → 6,621 desktop and 2,398 → 3,038 mobile. The tiles themselves stayed small —
 more space between them, not bigger previews.
+
+---
+
+## Revision: the stack groups (11 Sep 2026)
+
+A new `#stack` section between GitHub and the site previews, carrying the five badge groups from
+his profile README (`github.com/Gabe-Mills/Gabe-Mills`) — **same groups, same order, same items,
+nothing added or dropped**. Verified in the DOM against the README: 12 / 18 / 8 / 27 / 10 = **75
+chips**.
+
+```
+Languages                  12
+Libraries & tools          18
+AI I use every day          8
+Models we've actually run  27   · links to Massed-Compute/gpu-benchmark
+Devices                    10
+```
+
+Source of truth is `src/data/stack.ts`. Refresh it from:
+`gh api repos/Gabe-Mills/Gabe-Mills/contents/README.md --jq .content | base64 -d`
+
+### Colour
+The README's badges default to `#C4783A`, which is already almost exactly this site's ember — so
+the default chip needed no translation at all. Only the items he gave explicit brand colours carry
+a coloured dot:
+
+```
+Anthropic  #D97757   Claude, Claude Code
+OpenAI     #412991   ChatGPT, Codex, gpt-oss
+NVIDIA     #76B900   CUDA, Nemotron, L40S, A100, A6000, H100, H200, Blackwell
+Google AI  #8E75B2   Gemini
+GLM        #1A73E8
+neutral    #8A8A8A   Cursor, Grok, Ollama — the README used #000, unusable on a dark ground
+```
+
+If every chip were coloured none of them would mean anything; keeping the default ember is what
+makes the Anthropic / OpenAI / NVIDIA groupings legible at a glance. The `#000` badges were the one
+place the README couldn't be followed literally — pure black is invisible on `#060404`.
+
+### Note on the two language lists
+There are now two, and they answer different questions, so both are correct:
+- **Language composition** (GitHub section) — measured byte counts from public repos, 11 languages.
+- **Languages** (stack section) — what he lists on his profile, 12 languages. Includes C++ and C#,
+  which appear in no public repo.
+
+The chart's own subtitle scopes it ("983 KB across 5 repos"), so the difference reads as intended
+rather than as a contradiction. Don't "reconcile" them by editing either one.
+
+### Page height
+7,689 desktop / 4,578 mobile, 61 fps, no horizontal overflow. This is the longest the page has
+been — a consequence of adding 75 labels to a site that was 28 words a few hours ago, which is
+worth being deliberate about if more gets added.
