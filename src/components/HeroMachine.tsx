@@ -45,15 +45,6 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
             "translate3d(calc(var(--px,0) * -8px), calc(var(--py,0) * -8px), 0)",
         }}
       >
-        <motion.p
-          className="mb-6 font-mono text-[11px] uppercase tracking-[0.3em] text-muted sm:text-[12px] sm:tracking-[0.38em]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 1 }}
-        >
-          Systems emerging from the dark
-        </motion.p>
-
         <motion.h1
           className="select-none font-display font-normal leading-[0.9] tracking-[-0.02em] text-[17vw] sm:text-[15vw] md:text-[12vw] lg:text-[158px]"
           initial={{ opacity: 0, filter: "blur(18px)", y: 18 }}
@@ -72,22 +63,22 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
           <span className="block sm:inline">MILLS</span>
         </motion.h1>
 
-        {/* No tagline, no CTAs — the wordmark and the field are the hero now.
-            Positioning line and both buttons removed 11 Sep 2026 on request;
-            git history (or _backup-src-*) has the previous version. */}
+        {/* The wordmark is the entire hero. Removed on request, in order: the
+            positioning line and both CTAs, then the "Systems emerging from the
+            dark" eyebrow and the "Scroll to wake the machine" label. The
+            animated capsule below survives deliberately — it is a graphic, not
+            text, and with no copy left it is the only thing indicating the page
+            continues past the first screen. */}
       </div>
 
       {/* scroll indicator */}
       {isReady && (
         <motion.div
-          className="relative z-10 mt-14 flex flex-col items-center gap-3 md:absolute md:bottom-8 md:left-1/2 md:mt-0 md:-translate-x-1/2"
+          className="relative z-10 mt-16 flex flex-col items-center md:absolute md:bottom-10 md:left-1/2 md:mt-0 md:-translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.8, duration: 1 }}
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-text-primary/70 [text-shadow:0_1px_10px_rgba(0,0,0,0.9)]">
-            Scroll to wake the machine
-          </span>
           <div className="relative h-9 w-5 rounded-full border border-white/20">
             <span className="anim-scroll-dot absolute left-1/2 top-1.5 h-1.5 w-1 -translate-x-1/2 rounded-full bg-[#FFB15E]" />
           </div>
