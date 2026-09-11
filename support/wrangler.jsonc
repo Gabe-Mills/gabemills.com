@@ -1,0 +1,24 @@
+{
+  "name": "topbook-support",
+  "account_id": "354ad83c47d3f39d7d200155e84446ab",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-09-03",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": { "directory": "./dist", "binding": "ASSETS", "run_worker_first": true },
+  "routes": [
+    { "pattern": "gabemills.com/support*", "zone_name": "gabemills.com" },
+    { "pattern": "www.gabemills.com/support*", "zone_name": "gabemills.com" }
+  ],
+  "vars": {
+    "SUPABASE_URL": "https://booksearcher-api.gabemills.com",
+    "SITE_ORIGIN": "https://gabemills.com",
+    "APPLE_WEB_ENABLED": "false",
+    "DISCORD_GUILD_ID": "1545129215282647220",
+    "DISCORD_BOT_ID": "1545131077847220305",
+    "DISCORD_SUPPORT_CHANNEL": "1545134645241315408",
+    "DISCORD_TICKETS_CATEGORY": "1545139649645645826",
+    "DISCORD_TICKET_PANEL": "1545139650769850469"
+  },
+  "observability": { "enabled": false }
+}
