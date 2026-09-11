@@ -26,7 +26,7 @@ export default function StackSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: Math.min(gi * 0.06, 0.3), ease: [0.22, 1, 0.36, 1] }}
-              className={`p-6 sm:p-9 ${gi > 0 ? "border-t border-white/[0.07]" : ""}`}
+              className={`p-7 sm:p-10 ${gi > 0 ? "border-t border-white/[0.07]" : ""}`}
             >
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
@@ -52,26 +52,28 @@ export default function StackSection() {
                 </span>
               </div>
 
-              <ul className="mt-5 flex flex-wrap gap-2">
+              <ul className="mt-6 flex flex-wrap gap-2.5 sm:gap-3">
                 {group.items.map((item) => (
                   <li
                     key={item.label}
-                    className="group/chip flex items-center gap-2 rounded-full border px-2.5 py-1.5 transition-colors"
+                    className="flex items-center gap-2.5 rounded-full border px-4 py-2.5 transition-colors"
                     style={{
-                      borderColor: item.accent
-                        ? `${item.accent}55`
-                        : "rgba(255,177,94,0.22)",
-                      background: item.accent
-                        ? `${item.accent}14`
-                        : "rgba(255,177,94,0.06)",
+                      borderColor: item.accent ? `${item.accent}55` : "rgba(255,177,94,0.22)",
+                      background: item.accent ? `${item.accent}14` : "rgba(255,177,94,0.06)",
+                      // top inner highlight — what makes a pill read as a bubble
+                      // rather than as a flat outlined rectangle with round ends
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
                     }}
                   >
                     <span
                       aria-hidden="true"
-                      className="h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ background: item.accent ?? "#E4692C" }}
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{
+                        background: item.accent ?? "#E4692C",
+                        boxShadow: `0 0 7px ${item.accent ?? "#E4692C"}88`,
+                      }}
                     />
-                    <span className="whitespace-nowrap font-mono text-[11.5px] tracking-[0.01em] text-text-primary/90">
+                    <span className="whitespace-nowrap font-mono text-[12.5px] tracking-[0.01em] text-text-primary/90">
                       {item.label}
                     </span>
                   </li>

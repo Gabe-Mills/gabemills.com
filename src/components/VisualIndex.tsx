@@ -19,7 +19,7 @@ export default function VisualIndex() {
       className="relative z-10 scroll-mt-28 overflow-hidden px-5 py-24 md:py-36"
       aria-label="Builds"
     >
-      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-20 md:gap-28">
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-24 md:gap-32">
         {projects.map((p, i) => (
           <Tile key={p.id} project={p} index={i} />
         ))}
@@ -29,10 +29,16 @@ export default function VisualIndex() {
 }
 
 /** Unequal widths and offsets — the asymmetry is the composition. */
+/**
+ * `lift` is a CLASS, not an inline style. As `style={{ marginTop }}` the negative
+ * offsets applied at every breakpoint and cancelled the flex gap on narrow
+ * screens, so the tiles ended up touching. Scoped to md+, the stagger only
+ * happens where the asymmetric layout actually exists.
+ */
 const layout = [
-  { width: "md:w-[50%]", align: "md:self-start", lift: 0 },
-  { width: "md:w-[42%]", align: "md:self-end", lift: -80 },
-  { width: "md:w-[46%]", align: "md:self-start md:ml-[14%]", lift: -56 },
+  { width: "md:w-[52%]", align: "md:self-start", lift: "" },
+  { width: "md:w-[44%]", align: "md:self-end", lift: "md:-mt-16" },
+  { width: "md:w-[48%]", align: "md:self-start md:ml-[12%]", lift: "md:-mt-10" },
 ];
 
 function Tile({ project: p, index }: { project: Project; index: number }) {
@@ -59,8 +65,7 @@ function Tile({ project: p, index }: { project: Project; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-90px" }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      style={{ marginTop: l.lift }}
-      className={`group relative block w-full ${l.width} ${l.align} focus-visible:outline-none`}
+      className={`group relative block w-full ${l.width} ${l.align} ${l.lift} focus-visible:outline-none`}
     >
       <div className="glass-smoked relative overflow-hidden rounded-[14px]">
         {/* molten rim, revealed on hover — the hero's glass language, used sparingly */}

@@ -523,3 +523,40 @@ rather than as a contradiction. Don't "reconcile" them by editing either one.
 7,689 desktop / 4,578 mobile, 61 fps, no horizontal overflow. This is the longest the page has
 been — a consequence of adding 75 labels to a site that was 28 words a few hours ago, which is
 worth being deliberate about if more gets added.
+
+---
+
+## Fix: the tile gap was a real bug (11 Sep 2026)
+
+The preview tiles were nearly touching at narrow widths, and it wasn't a spacing value — it was
+a breakpoint bug. `lift` was applied as an inline `style={{ marginTop: l.lift }}`, so the `-80px`
+and `-56px` stagger offsets ran at **every** width. Below `md`, where the tiles are full-width and
+stacked, those negatives simply cancelled the flex gap.
+
+`lift` is now a Tailwind class (`md:-mt-16`, `md:-mt-10`), so the stagger exists only where the
+asymmetric layout does. Measured after:
+
+```
+width   tile widths        gap between boxes
+1440    399 / 338 / 369    64, 88   (md stagger intentionally tightens these)
+1000    399 / 338 / 369    64, 88
+ 700    660 / 660 / 660    96, 96   ← was 0 and 24
+ 375    335 / 335 / 335    96, 96
+```
+
+**The lesson worth keeping:** an inline style has no breakpoint. Anything that should only apply
+at one size has to be a class, or it silently fights the responsive layout at every other size.
+
+## Chips became bubbles
+
+```
+padding    px-2.5 py-1.5  →  px-4 py-2.5     (height 27px → 41px)
+row gap    gap-2          →  gap-2.5 sm:gap-3 (8px → 12px)
+label      11.5px         →  12.5px
+dot        1.5 → 2 units, plus a 7px coloured bloom
+group pad  p-6 sm:p-9     →  p-7 sm:p-10
+```
+
+The inner top highlight (`inset 0 1px 0 rgba(255,255,255,0.07)`) is what makes a pill read as a
+bubble rather than an outlined rectangle with round ends — same trick as the smoked panels, at a
+smaller scale.
