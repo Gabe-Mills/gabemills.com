@@ -608,3 +608,45 @@ width   height   overflowX   stack chips   github bubbles   bar segments
  375     5,338       0            75             16              8
 ```
 No console errors at any width.
+
+---
+
+## Fix: the screenshots were a scale problem, not a quality problem (12 Sep 2026)
+
+The previews looked mushy, and the instinct was to make the images "better". The sources were
+already 1600×1000 against a ~380px tile — far more resolution than needed. The real cause was
+**scale**: a whole 1440px-wide page squeezed into 380px is a 3.8× reduction, so 13px body text
+rendered at **3.4px**. No amount of image quality fixes that.
+
+**Capture at a narrower viewport instead.** At 1000px it's a 2.6× reduction and the hero headlines
+survive at roughly 12–15px, which is the only reason to show a screenshot at all.
+
+```
+capture   1000 × 750 at DPR 2  →  2000 × 1500  →  downscaled to 1500 × 1125, JPEG q92
+```
+q92, not q80 — these are text-heavy shots and JPEG artefacts land straight on the glyph edges.
+
+### Why 4:3 and not 16:10
+The image box is not the container. The container is `aspect-[16/10]`, but the img carries an
+overscan for the parallax, so its box is `1.6 / overscan`. At the old `h-[120%]` that made the box
+**1.33**, and 16:10 sources inside a 1.33 box meant `object-cover` cropped the *sides* — which is
+what clipped "Leland Plays Piano" to "eland Plays Piano".
+
+Now: sources are 4:3, overscan is `h-[112%]` (box 1.43), so cover trims top and bottom instead —
+harmless, since the content is top-aligned. The parallax range was cut to ±13–19px to stay inside
+the smaller overscan; exceed it and a bare edge shows.
+
+**The rule:** whenever the overscan or the source aspect changes, the other has to change with it,
+and the parallax range has to fit inside whatever overscan remains.
+
+### Framing
+`gcoolers` is captured at scroll 330 rather than the top. The top of that page is just a wordmark
+on black — nearly empty at tile size. Scroll 330 catches the install buttons, the brew command and
+the live TUI dashboard with its temperature bars, which is what the product actually looks like.
+`leland` and `afterglow` are captured at the top; both lead with a large serif headline that
+survives the reduction.
+
+### Not generated
+These stay real screenshots. Each tile names a host and links to it, so a generated image in that
+slot would be a fabricated picture of a real, identifiable site. Generated imagery is fine for
+things that don't stand in for something real — an OG card, background art — but not here.

@@ -48,8 +48,11 @@ function Tile({ project: p, index }: { project: Project; index: number }) {
     offset: ["start end", "end start"],
   });
   // each tile drifts at its own rate, so the row never moves as one slab
-  // Range kept inside the image's 20% vertical overflow so no edge is ever exposed.
-  const y = useTransform(scrollYProgress, [0, 1], [20 + index * 4, -20 - index * 4]);
+  // Overscan is 12%, so the parallax range has to stay inside it or an edge shows.
+  // The sources are now 4:3 and the image box is 1.6/1.12 = 1.43, which means
+  // object-cover trims top and bottom rather than the sides — at 16:10 sources
+  // with a 20% overscan it cropped horizontally and clipped "Leland" to "eland".
+  const y = useTransform(scrollYProgress, [0, 1], [13 + index * 3, -13 - index * 3]);
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
 
   const l = layout[index % layout.length];
@@ -91,7 +94,7 @@ function Tile({ project: p, index }: { project: Project; index: number }) {
             src={p.shot}
             alt={p.shotAlt}
             style={{ y, scale }}
-            className="absolute inset-x-0 -top-[10%] h-[120%] w-full object-cover object-top"
+            className="absolute inset-x-0 -top-[6%] h-[112%] w-full object-cover object-top"
             loading="lazy"
             decoding="async"
           />
