@@ -4,26 +4,20 @@ import { motion } from "framer-motion";
 const GITHUB_URL = "https://github.com/Gabe-Mills";
 
 /**
- * ▶ PASTE THE LINKEDIN PROFILE URL HERE AND THE BUTTON APPEARS. ◀
- *
- * The whole button — icon, label, sizing, hover, focus ring — is built and sits
- * directly below. It renders only when this string is non-empty, so the live
- * site never carries a link that goes nowhere, and turning it on is this one
- * line and nothing else.
- *
- * (Gabe, 12 Sep 2026: no profile yet. Worth making for recruiter inbound, but a
- * half-filled one reads as abandoned — photo, the Massed Compute role, and the
- * three projects, or don't bother.)
+ * The button renders only when this is non-empty — that was the point of
+ * holding the slot, and it stays that way: empty the string and the site loses
+ * the button cleanly rather than serving a link to nowhere.
  */
-const LINKEDIN_URL = "";
+const LINKEDIN_URL = "https://www.linkedin.com/in/gabemillsmc/";
 
 /**
- * Wordmark, GitHub, and a slot held for LinkedIn.
+ * Wordmark, GitHub, LinkedIn.
  *
- * The section links went with the prose, and GitHub is still the only live
- * outbound personal link — so it keeps the one solid affordance in the bar.
- * The mailto Build pill was removed 11 Sep 2026 on request; the contact
- * question was reopened 12 Sep 2026 and parked on LinkedIn.
+ * The section links went with the prose, so the bar is down to identity and the
+ * two ways to reach Gabe. The mailto Build pill was removed 11 Sep 2026 on
+ * request; the contact question reopened 12 Sep and closed the same day when he
+ * supplied the LinkedIn profile — that is now the only non-GitHub path in, so
+ * it earns equal weight in the bar rather than being tucked in the footer.
  */
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);

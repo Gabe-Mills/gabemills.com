@@ -8,11 +8,23 @@ import { motion } from "framer-motion";
  * behind it. Display type is Instrument Serif; the only thick-glass surfaces on
  * the site live here.
  */
-/** the separator in the positioning line — spaced for the 0.26em tracking */
-function Dot() {
+/**
+ * The separator in the positioning line.
+ *
+ * Same trap as the stack index, and it caught me twice: margins make visual
+ * space but no *break opportunity*, so three `whitespace-nowrap` phrases with
+ * margin-separated dots and no whitespace text node between them produced one
+ * unbreakable line that ran off both edges of a phone. The hero clips it with
+ * `overflow-hidden`, so it never registered as page overflow — it just silently
+ * cut "GPU CLOUD" to "CLOUD".
+ *
+ * A no-break space glues the dot to the phrase before it; the caller puts an
+ * ordinary space after, which is the only place the line may break.
+ */
+function Sep() {
   return (
-    <span aria-hidden="true" className="mx-2.5 text-muted/45 sm:mx-3">
-      ·
+    <span aria-hidden="true" className="text-muted/45">
+      {" ·"}
     </span>
   );
 }
@@ -81,11 +93,14 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          GPU cloud
-          <Dot />
-          native Apple apps
-          <Dot />
-          creative tech
+          {/* Inner no-break spaces hold each discipline together, so a narrow
+              screen breaks BETWEEN the three and never through the middle of
+              one — at 375 it was landing as "NATIVE APPLE / APPS". */}
+          {"GPU cloud"}
+          <Sep />{" "}
+          {"native Apple apps"}
+          <Sep />{" "}
+          {"creative tech"}
         </motion.p>
 
         <motion.p

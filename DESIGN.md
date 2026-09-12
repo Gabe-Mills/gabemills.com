@@ -907,3 +907,42 @@ exits right. Left-to-right sweep means `0% → 100%` with the resting palette at
 `1440 / 375`, plus `prefers-reduced-motion`: 60fps with the pointer live in the field, no console
 errors, no horizontal overflow at any width. Reduced motion reports `animation-name: none` on the
 wordmark and still rests on the correct third. The nav reports zero links without an `href`.
+
+---
+
+## LinkedIn is live, and the separator trap bit a second time (12 Sep 2026)
+
+`LINKEDIN_URL` in `Navbar.tsx` is now `https://www.linkedin.com/in/gabemillsmc/` and the button it
+was holding a slot for renders. The site finally has a contact path that isn't "go to GitHub and
+hope for an email". The conditional stays exactly as it was — empty the string and the button
+disappears cleanly rather than serving a dead link.
+
+Bar measures 267px with all three pills and fits at a 320px viewport, so no responsive work was
+needed.
+
+### The bug worth recording
+Adding the hero's positioning line, I wrapped each discipline in `whitespace-nowrap` and separated
+them with margin-spaced dots. **Margins make visual space but no soft-wrap opportunity**, so with
+no whitespace text node anywhere in the line the whole thing became unbreakable and ran off both
+edges at 375px — rendering as "CLOUD · NATIVE APPLE APPS · CREATIVE T".
+
+This is the identical mistake made in the stack index two hours earlier, and the fix is the same
+one: **a no-break space glues the dot to the phrase before it, an ordinary space after the dot is
+the only break point.** Inner nbsp inside each phrase (`GPU cloud`) keeps the disciplines
+whole, so 375 now breaks between them, never through one.
+
+### Why the check didn't catch it
+The verifier tested `documentElement.scrollWidth > clientWidth`. The hero is `overflow-hidden`, so
+a line running off its edge is *clipped*, not scrolled — the page reported no overflow while text
+was visibly missing. **A page-level overflow check cannot see inside a clipping container.**
+
+`nav.mjs` now walks `getClientRects()` on every text run in the hero, the tiles and the index and
+compares each box against the viewport directly. That catches clipped text, which is the failure
+mode that actually happens on a page built out of `overflow-hidden` sections.
+
+### Verified
+`1440 / 700 / 375 / 320`: zero clipped text runs, three nav links all with an `href`, nav bar inside
+the viewport at every width, no console errors.
+
+**Unverified, and can't be from here:** LinkedIn serves bots an auth wall, so the profile URL was
+taken as given rather than fetched. Worth opening once in a logged-out browser.
