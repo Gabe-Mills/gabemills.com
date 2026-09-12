@@ -745,3 +745,72 @@ what was asked for. Leland's hero is 652px of a 840px frame at this width; the r
 the top of the photo strip, which reads as the page continuing rather than as dead space.
 
 `shotAlt` for gcoolers was rewritten — it still described the install section.
+
+---
+
+## The physics field is out. The stack is a typographic index. (12 Sep 2026)
+
+Gabe, on the section shipped an hour earlier: *"i dont like the way the bubble look works, i
+dont like that whole section redo that."*
+
+He was right, and the diagnosis is worth keeping because it invalidates three attempts at once —
+the boxed card, the flex-wrap of pills, and the physics field. **The content is 75 short strings.
+Wrapping each one in a bordered, filled, backdrop-blurred container makes 75 pieces of furniture,
+and they compete with the constellation for the whole height of the section.** Making the
+furniture float, cluster and jostle made it *more* prominent, not less. The problem was never the
+arrangement of the containers; it was that there were containers.
+
+So the words are set as words. Group label, a hairline that fades to the right, and a run of terms
+flowing like prose. Nothing else.
+
+### What survived from the pills
+The **brand colour**, which is the only information those little dots were carrying. An item with
+an explicit accent wears it as its text colour; everything else is warm white
+(`rgba(255,242,234,0.7)`). The coloured terms punctuate the run the way the coloured dots
+punctuated the grid — CUDA green, Claude orange, GLM blue — and there are few enough of them that
+they read as emphasis rather than decoration.
+
+### Three things that had to be got right
+
+**Brand colours are not text colours.** OpenAI's `#412991` is fine as an 8px dot with a border
+around it and nearly invisible as a word on near-black. `legible()` blends each accent toward the
+page's warm white in 12% steps until it clears a relative-luminance floor of `0.2`, and stops.
+Only OpenAI's purple actually moves (`#412991 → #8d79b5`); NVIDIA's green, Anthropic's orange and
+Google's lavender already clear it and come back untouched. A flat 40% tint would have washed all
+four to the same pastel and the distinctions would have stopped meaning anything.
+
+**The separator.** Left as a free-floating `·` between terms, a wrap started lines with
+"· HTML · CSS". Binding term-and-dot together with `whitespace-nowrap` fixed that and introduced a
+much worse bug: with no whitespace text node anywhere in the list, **there were no soft-wrap
+opportunities at all** and the run ran straight off the right edge of the page. The answer is
+typographic, not structural: a no-break space glues the dot to the word before it, and an ordinary
+space after the dot is the line's only break point. A wrap now leaves the dot at the end of the
+line it belongs to.
+
+**`display: inline`, not `inline-block`.** An inline-block is an atomic inline, and Chrome breaks
+between it and a following no-break space — which put a stray dot at the start of the line after
+"Muse Glimmer" even with the nbsp in place. As a plain inline box the normal text-breaking rules
+apply. That rules out `transform` for the hover lift, so the lift is `position: relative; bottom`,
+which does work on an inline box.
+
+Two smaller ones: `word-spacing: 0.2em` on the list gives the dots room, and has to be reset to
+`normal` on each term or it pulls "Claude Code" and "Muse Glimmer" apart until they read as two
+entries each. And Cursor, Grok and Ollama lost their grey accent — the README gave them `#000`,
+which was substituted with a grey when it was only a dot, but a grey *word* in a run of white ones
+reads as "lesser", which is not what a black brand mark means.
+
+### Motion
+None. No entrance, no drift, no scroll reveal — the terms are simply there. Only the term under
+the cursor responds: it takes its colour, gains a halo, and lifts 2px. Hover and keyboard focus
+are the same CSS rule; `prefers-reduced-motion` drops the lift and keeps the colour.
+
+Stripping the panels off was always in service of the constellation. This is the version that lets
+it be the only thing alive on the page.
+
+### Verified
+`1440 / 1000 / 700 / 375`: 75 terms in 5 groups, **0 orphaned separators**, 0 terms wider than
+their list, no horizontal overflow, no console errors. Type scales `clamp(18px, 2.05vw, 25px)`.
+
+`BubbleField.tsx` is deleted. `Bubble.tsx` stays — the GitHub section still uses it for the
+language legend, where a chip is genuinely a key to the bar directly above it rather than a
+container around a word.

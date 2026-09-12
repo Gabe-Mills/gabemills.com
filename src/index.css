@@ -431,3 +431,57 @@ body.is-scroll-locked {
     transition-duration: 0.001ms !important;
   }
 }
+
+/**
+ * One term in the stack index.
+ *
+ * `display: inline`, deliberately, not `inline-block`. An inline-block is an
+ * atomic inline, and the browser will happily break the line between it and the
+ * no-break space that glues the separator dot to it — which put a stray "·" at
+ * the start of a line after "Muse Glimmer". As a plain inline box the normal
+ * text-breaking rules apply and the dot stays put.
+ *
+ * That rules out `transform` for the hover lift (a no-op on an inline box), so
+ * the lift is `position: relative; bottom` instead, which does work inline and
+ * costs the layout nothing. `nowrap` still holds "Muse Glimmer" on one line.
+ *
+ * The three colours arrive as custom properties from the component, which keeps
+ * the whole interaction in CSS: hover and keyboard focus behave identically and
+ * reduced motion drops the lift without touching the colour change.
+ */
+.term {
+  display: inline;
+  position: relative;
+  bottom: 0;
+  white-space: nowrap;
+  /* the list widens word-spacing to give the separator dots room; inherited
+     into a term it pulls "Claude Code" and "Muse Glimmer" apart until they read
+     as two entries each */
+  word-spacing: normal;
+  color: var(--rest);
+  transition:
+    color 220ms ease-out,
+    bottom 220ms ease-out,
+    text-shadow 220ms ease-out;
+}
+
+.term:hover,
+.term:focus-visible {
+  color: var(--hot);
+  bottom: 2px;
+  /* the second shadow is `.on-field` — it has to be restated or the term loses
+     its ground against the lattice for exactly as long as you're hovering it */
+  text-shadow:
+    0 0 26px var(--halo),
+    0 1px 10px rgba(6, 4, 4, 0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .term {
+    transition: color 220ms ease-out;
+  }
+  .term:hover,
+  .term:focus-visible {
+    bottom: 0;
+  }
+}

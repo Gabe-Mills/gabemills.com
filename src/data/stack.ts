@@ -27,7 +27,9 @@ const OPENAI = "#412991";
 const ANTHROPIC = "#D97757";
 const NVIDIA = "#76B900";
 const GOOGLE_AI = "#8E75B2";
-const BLACK = "#8A8A8A"; // README used #000 — unusable on a dark ground, so a neutral
+// The README gave Cursor, Grok and Ollama #000. As a pill dot that could be
+// substituted with a grey; as a word in the type index a grey term reads as
+// "lesser", which is not what a black brand mark means. They stay neutral.
 
 export const stack: StackGroup[] = [
   {
@@ -73,14 +75,14 @@ export const stack: StackGroup[] = [
   {
     title: "AI I use every day",
     items: [
-      { label: "Cursor", accent: BLACK },
+      { label: "Cursor" },
       { label: "Claude", accent: ANTHROPIC },
       { label: "Claude Code", accent: ANTHROPIC },
       { label: "ChatGPT", accent: OPENAI },
       { label: "Codex", accent: OPENAI },
-      { label: "Grok", accent: BLACK },
+      { label: "Grok" },
       { label: "Gemini", accent: GOOGLE_AI },
-      { label: "Ollama", accent: BLACK },
+      { label: "Ollama" },
     ],
   },
   {
