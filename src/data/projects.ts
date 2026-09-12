@@ -52,7 +52,7 @@ export const projects: Project[] = [
     glowClass: "green-status-glow",
     shot: "/screenshots/shot-gcoolers.jpg",
     shotAlt:
-      "Gcoolers install section showing a two-line Homebrew command in a terminal window",
+      "Gcoolers homepage — the wordmark above a live terminal panel graphing CPU and GPU temperature history",
   },
   {
     id: "leland-plays-piano",

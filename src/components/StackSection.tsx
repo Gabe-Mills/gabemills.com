@@ -1,19 +1,32 @@
 import { motion } from "framer-motion";
 import Bubble from "./Bubble";
+import BubbleField from "./BubbleField";
 import { stack } from "../data/stack";
 
 /**
  * The five groups from Gabe's profile README — unboxed.
  *
- * There is no card. Each bubble floats directly on the constellation and grows
- * when you touch it. Headings wear `.on-field` because once the panel is gone
- * a 10px mono label has a lattice of glowing lines running through it.
+ * There is no card and no grid. Each group is a `BubbleField`: the bubbles fall
+ * toward a point in the middle of the band, pack against each other, and get
+ * pushed around by the cursor. Headings wear `.on-field` because once the panel
+ * is gone a 10px mono label has a lattice of glowing lines running through it.
  */
+/**
+ * Where each cluster's attractor sits, as a fraction off the field's centre.
+ * Five blobs on one axis read as one component repeated; drifting the point
+ * they collapse toward is the same trick the project tiles use with width and
+ * offset. Kept small — past about 0.1 the cluster starts leaning on a wall.
+ */
+const BIAS = [-0.07, 0.06, -0.05, 0.04, -0.06];
+
 export default function StackSection() {
   return (
     <section
       id="stack"
-      className="relative z-10 scroll-mt-28 px-5 pb-28 md:pb-40"
+      /* pb-16, not the old pb-28/40: every field now carries ~45px of its own
+         slack below the cluster, and the two stacked left half a screen of
+         nothing between the last bubble and the first tile. */
+      className="relative z-10 scroll-mt-28 px-5 pb-16 md:pb-24"
       aria-label="Stack"
     >
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 md:gap-20">
@@ -49,17 +62,15 @@ export default function StackSection() {
               </span>
             </div>
 
-            <ul className="mt-6 flex flex-wrap gap-3">
+            <BubbleField bias={BIAS[gi % BIAS.length]}>
               {group.items.map((item) => (
-                <li key={item.label}>
-                  <Bubble accent={item.accent}>
-                    <span className="whitespace-nowrap font-mono text-[12.5px] tracking-[0.01em] text-text-primary/90">
-                      {item.label}
-                    </span>
-                  </Bubble>
-                </li>
+                <Bubble key={item.label} accent={item.accent}>
+                  <span className="whitespace-nowrap font-mono text-[12.5px] tracking-[0.01em] text-text-primary/90">
+                    {item.label}
+                  </span>
+                </Bubble>
               ))}
-            </ul>
+            </BubbleField>
           </motion.div>
         ))}
       </div>

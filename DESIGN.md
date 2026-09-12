@@ -650,3 +650,98 @@ survives the reduction.
 These stay real screenshots. Each tile names a host and links to it, so a generated image in that
 slot would be a fabricated picture of a real, identifiable site. Generated imagery is fine for
 things that don't stand in for something real — an OG card, background art — but not here.
+
+---
+
+## The stack stops being a list: `BubbleField` (12 Sep 2026)
+
+Brief: *"the bubbles of what i do … have like physics and rush to a point around the middle."*
+
+`flex flex-wrap gap-3` was a grid pretending to be loose — rows, gutters, a ragged right edge.
+Each group is now a solver. Every pill is a body: it falls toward a point in the middle of the
+band, collides with its neighbours instead of overlapping them, gets shoved aside by the cursor,
+and never fully stops.
+
+### The forces
+| force | value | why |
+|---|---|---|
+| pull to centre | `K_IN = 0.0026`/frame | the "point around the middle" |
+| vertical multiplier | `K_Y = 1.7` | flattens the blob so it reads wide, not round |
+| entrance boost | `×4.4 → ×1` over `1150ms`, eased | this is the *rush* |
+| damping | `0.885 → 0.907` | loose during the rush, settled after |
+| wander | `±0.019 / ±0.013` per axis | a frozen cluster stops reading as physical |
+| cursor | `132px`, `(1-d/r)² × 2.7 × invMass` | light pills scatter, wide ones barely move |
+
+### Two decisions that carry the whole thing
+
+**Rectangle separation, not circles.** A 160px pill inside its bounding circle leaves a hole the
+size of another pill on each side. Pairs are separated along the axis of *least* overlap, weighted
+by inverse mass (`invMass = 1 / (w·h / 3400)`), so wide pills shove narrow ones and the cluster
+packs like pills rather than spraying like marbles.
+
+**Two render passes, in this order.** Pass one is the real `flex-wrap` list, so the browser
+measures each pill at its intrinsic width; pass two pins those measurements and goes absolute.
+Measuring *after* going absolute gives shrink-to-fit against a different containing block — pills
+come out a few pixels narrow.
+
+### Calibration, in the order the numbers were wrong
+- `K_Y = 3.1` squeezed a ten-pill group into a single row wider than the container; the walls then
+  forced pills through each other. → `1.7`.
+- Box height from *total area* needed a clamp, and on a 375px screen the clamp saturated: the
+  27-pill group hit its 520px ceiling with **16 overlaps**. The browser's own wrap height, measured
+  in pass one, is the honest answer to "how much room do these need". → `H = max(200, flowH × 1.88)`.
+- `×1.65` left the dense group 11px of total slack — pressed against both walls, which is exactly
+  where relaxation stops converging. → `×1.88`.
+- `ITER = 6` still lost one pill in a confined group: separating one pair pushes into the next, and
+  the cycle needs iterations to unwind. → `10`. (27 bodies is 351 pairs; 10 passes is nothing.)
+- The starting ring is *necessarily* overlapped — 27 pills spaced around one ellipse have to be — so
+  for one frame before the solver ran you saw a stack of pills on top of each other. The field now
+  holds `opacity: 0` until the IntersectionObserver starts it, and fades in across the rush.
+- `pb-28 md:pb-40` on the section stacked on top of the ~45px of slack each field now carries below
+  its cluster, leaving half a screen of nothing before the first tile. → `pb-16 md:pb-24`.
+
+### Where it does not run
+- **`prefers-reduced-motion`** — pass one *is* the render. Verified: 0 absolutely-positioned
+  children, all 75 chips present, nothing left at opacity 0.
+- **Below 620px** — a phone has no cursor, so half the interaction is gone, and 27 pills two to a
+  row need a metre of scroll to jostle in. Narrow screens keep the wrap.
+- **Off screen** — an IntersectionObserver (`rootMargin: 120px`) starts and stops each rAF loop, so
+  only the fields you can see cost anything.
+
+### Asymmetry
+`BIAS = [-0.07, 0.06, -0.05, 0.04, -0.06]` moves each attractor off centre by a fraction of the
+field width. Five blobs on one axis read as one component repeated five times; drifting the point
+they collapse toward is the same move the project tiles make with width and offset. Past about
+`0.1` a cluster starts leaning on a wall.
+
+### Verified
+`1440 / 1000 / 700`: **60fps**, 0 overlaps, 0 bodies outside their box, no console errors, no
+horizontal overflow. `375`: falls back to the wrap.
+
+---
+
+## Screenshots, second pass: framing, not resolution (12 Sep 2026)
+
+Brief: the gcoolers *intro* shot with the graph in it, and Leland's *landing* view.
+
+`gcoolers.com` has no `<svg>`, `<canvas>` or `<img>` on the page — the "graph" is the HISTORY
+sparkline inside the hero's ASCII TUI panel (`.hero-live`, ~290px tall, sitting below the fold at
+750px). The old scroll-330 capture caught the install buttons and the top of the TUI but cut the
+graph off. The capture script now measures the band from `.hero-tag` to `.hero-live` and centres
+*that* in the frame — scroll resolves to **114** rather than being hardcoded, so it survives copy
+changes on that page.
+
+### Geometry changed with it
+```
+capture   1200 × 840 at DPR 2  →  2400 × 1680  →  downscaled to 1500 × 1050, JPEG q92
+```
+1200/840 = **1.4286**, which is exactly the tile's image box (`aspect-[16/10]` ÷ `h-[112%]`
+overscan). At 4:3 the sources were being trimmed top and bottom by `object-cover`; at 1.4286 the
+whole capture survives. The rule from the last pass still holds: **overscan, source aspect and
+parallax range move together.**
+
+`leland` and `afterglow` stay at scroll 0 — both lead with the thing you see on arrival, which is
+what was asked for. Leland's hero is 652px of a 840px frame at this width; the remaining band shows
+the top of the photo strip, which reads as the page continuing rather than as dead space.
+
+`shotAlt` for gcoolers was rewritten — it still described the install section.
