@@ -109,14 +109,29 @@ function Tile({ project: p, index }: { project: Project; index: number }) {
           }}
         />
 
-        {/* caption row — gallery label, below the work */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4">
+        {/* Caption row. Until 12 Sep this was a name and a host, and that is all
+            a stranger got — no way to tell whether Gabe built the thing or
+            skinned it. `role`, `status` and a one-line blurb were sitting in
+            projects.ts unrendered the whole time; a portfolio tile that doesn't
+            say what you did is a screenshot, not a credit. */}
+        <div className="flex items-start justify-between gap-3 px-4 py-3.5 sm:px-5 sm:py-4">
           <div className="min-w-0">
             <h2 className="truncate text-[15px] font-semibold tracking-tight text-text-primary sm:text-[16.5px]">
               {p.title}
             </h2>
-            <p className="mt-0.5 truncate font-mono text-[10.5px] tracking-wide text-muted">
-              {p.host}
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 font-mono text-[10.5px] tracking-wide text-muted">
+              <span className="truncate">{p.host}</span>
+              <span aria-hidden="true" className="text-muted/40">
+                ·
+              </span>
+              <span className="text-[#FFB15E]/75">{p.role}</span>
+              <span aria-hidden="true" className="text-muted/40">
+                ·
+              </span>
+              <span>{p.status}</span>
+            </p>
+            <p className="mt-2 text-[12.5px] leading-[1.5] text-text-primary/60">
+              {p.blurb}
             </p>
           </div>
           <span

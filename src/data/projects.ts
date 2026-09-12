@@ -25,6 +25,12 @@ export interface Project {
   glow: string;
   /** css class for glow shadow */
   glowClass: string;
+  /**
+   * One line, present tense, ~12 words. `summary` is two sentences of prose
+   * written for a case-study layout that no longer exists — at tile width it
+   * wraps to five lines and nobody reads it. This is the tile's copy.
+   */
+  blurb: string;
   /** real screenshot of the live site */
   shot: string;
   shotAlt: string;
@@ -50,6 +56,8 @@ export const projects: Project[] = [
     stack: ["IOKit (user space)", "Local daemon", "Homebrew tap", "Menu-bar app"],
     glow: "255, 196, 92",
     glowClass: "green-status-glow",
+    blurb:
+      "Fan curves and live temperatures for Apple Silicon, entirely in user space.",
     shot: "/screenshots/shot-gcoolers.jpg",
     shotAlt:
       "Gcoolers homepage — the wordmark above a live terminal panel graphing CPU and GPU temperature history",
@@ -73,6 +81,8 @@ export const projects: Project[] = [
     stack: ["Next.js", "YouTube embeds", "Image optimization", "Newsletter capture"],
     glow: "196, 148, 84",
     glowClass: "corvus-glow",
+    blurb:
+      "Press kit, catalogue and booking paths for a working pianist, in one place.",
     shot: "/screenshots/shot-leland.jpg",
     shotAlt:
       "Leland Plays Piano homepage with a large serif headline and the most recent performance video",
@@ -96,6 +106,8 @@ export const projects: Project[] = [
     stack: ["Web Audio", "Shared playback clock", "Illustrated scene"],
     glow: "235, 78, 46",
     glowClass: "purple-glow",
+    blurb:
+      "One endless track on a shared clock — everyone hears the same bar.",
     shot: "/screenshots/shot-afterglow.jpg",
     shotAlt:
       "Fuji Afterglow homepage — an illustrated rainy window looking out at Mount Fuji, with a Join live button",

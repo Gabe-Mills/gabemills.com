@@ -445,43 +445,118 @@ body.is-scroll-locked {
  * the lift is `position: relative; bottom` instead, which does work inline and
  * costs the layout nothing. `nowrap` still holds "Muse Glimmer" on one line.
  *
- * The three colours arrive as custom properties from the component, which keeps
- * the whole interaction in CSS: hover and keyboard focus behave identically and
- * reduced motion drops the lift without touching the colour change.
+ * `--w` is the term's warmth, 0 to 1, written per frame by StackSection's
+ * proximity field. Everything visual derives from it, so the JS only ever
+ * touches one number per element and never reads layout in the loop.
+ *
+ * The 140ms transition is doing real work: the field updates on rAF, and
+ * letting the derived colour ease toward each new value adds a trailing
+ * smoothness the raw distance falloff doesn't have. It also means the effect
+ * degrades correctly — with no JS at all, `:hover` sets `--w: 1` and the term
+ * fades up exactly as it did before the field existed.
  */
 .term {
+  --w: 0;
   display: inline;
   position: relative;
-  bottom: 0;
+  bottom: calc(var(--w) * 2px);
   white-space: nowrap;
   /* the list widens word-spacing to give the separator dots room; inherited
      into a term it pulls "Claude Code" and "Muse Glimmer" apart until they read
      as two entries each */
   word-spacing: normal;
+  /* plain colour first, for anything without color-mix */
   color: var(--rest);
+  color: color-mix(in oklab, var(--hot) calc(var(--w) * 100%), var(--rest));
+  /* the second shadow is `.on-field` — it has to be restated here or the term
+     loses its ground against the lattice the moment this rule takes over */
+  text-shadow:
+    0 0 calc(var(--w) * 24px) color-mix(in srgb, var(--hot) calc(var(--w) * 44%), transparent),
+    0 1px 10px rgba(6, 4, 4, 0.95);
   transition:
-    color 220ms ease-out,
-    bottom 220ms ease-out,
-    text-shadow 220ms ease-out;
+    color 140ms linear,
+    bottom 140ms linear,
+    text-shadow 140ms linear;
 }
 
-.term:hover,
+.term:hover {
+  --w: 1;
+}
+
+/* !important so keyboard focus still lands at full warmth while the field is
+   writing --w inline every frame — an author !important beats an inline
+   declaration, which is the only way to win that specificity fight */
 .term:focus-visible {
-  color: var(--hot);
-  bottom: 2px;
-  /* the second shadow is `.on-field` — it has to be restated or the term loses
-     its ground against the lattice for exactly as long as you're hovering it */
-  text-shadow:
-    0 0 26px var(--halo),
-    0 1px 10px rgba(6, 4, 4, 0.95);
+  --w: 1 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .term {
-    transition: color 220ms ease-out;
-  }
-  .term:hover,
-  .term:focus-visible {
     bottom: 0;
+    transition: color 200ms ease-out;
+  }
+}
+
+/**
+ * The wordmark, and the heat that passes through it once.
+ *
+ * The background is three copies of the resting palette side by side with a
+ * saturated ember core built into the middle one, and the sweep is nothing more
+ * than `background-position` travelling across it. One element, one animation,
+ * no duplicated text node — which matters because the wordmark breaks into two
+ * lines on narrow screens and any `content: attr()` overlay would flatten it.
+ *
+ * It ends on the last third, so the resting appearance is the animation's own
+ * final keyframe rather than a separate declaration that can drift out of sync.
+ */
+.wordmark {
+  background-image: linear-gradient(
+    96deg,
+    /* first third — what shows before the sweep starts */
+    #ffe9cc 0%,
+    #ffffff 11.3%,
+    #ffb673 19.3%,
+    #ffe9cc 33.33%,
+    /* second third — the hot pass */
+    #ffffff 41%,
+    #ffc48a 46%,
+    #ff8a3c 50%,
+    #ffc48a 54%,
+    #ffffff 59%,
+    #ffe9cc 66.67%,
+    /* last third — the resting palette, where it comes to rest */
+    #ffffff 78%,
+    #ffb673 86%,
+    #ffe9cc 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* `filter` belongs to framer-motion here (it animates the entrance blur and
+     would clobber a drop-shadow), so the bloom is a text-shadow — which paints
+     the glyph silhouette even under a transparent fill */
+  text-shadow: 0 10px 66px rgba(255, 120, 40, 0.26);
+  animation: wordmark-sweep 1.8s cubic-bezier(0.36, 0, 0.14, 1) 0.75s both;
+}
+
+@keyframes wordmark-sweep {
+  from {
+    background-position: 0% 0;
+    text-shadow: 0 10px 66px rgba(255, 120, 40, 0.26);
+  }
+  55% {
+    text-shadow: 0 10px 80px rgba(255, 138, 60, 0.55);
+  }
+  to {
+    background-position: 100% 0;
+    text-shadow: 0 10px 66px rgba(255, 120, 40, 0.26);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark {
+    animation: none;
   }
 }

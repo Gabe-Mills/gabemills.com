@@ -4,11 +4,26 @@ import { motion } from "framer-motion";
 const GITHUB_URL = "https://github.com/Gabe-Mills";
 
 /**
- * Wordmark and GitHub. That's the whole nav.
+ * ▶ PASTE THE LINKEDIN PROFILE URL HERE AND THE BUTTON APPEARS. ◀
  *
- * The section links went with the prose, and GitHub is now the only outbound
- * personal link on the site — so it gets the one solid affordance in the bar.
- * The mailto Build pill was removed 11 Sep 2026 on request.
+ * The whole button — icon, label, sizing, hover, focus ring — is built and sits
+ * directly below. It renders only when this string is non-empty, so the live
+ * site never carries a link that goes nowhere, and turning it on is this one
+ * line and nothing else.
+ *
+ * (Gabe, 12 Sep 2026: no profile yet. Worth making for recruiter inbound, but a
+ * half-filled one reads as abandoned — photo, the Massed Compute role, and the
+ * three projects, or don't bother.)
+ */
+const LINKEDIN_URL = "";
+
+/**
+ * Wordmark, GitHub, and a slot held for LinkedIn.
+ *
+ * The section links went with the prose, and GitHub is still the only live
+ * outbound personal link — so it keeps the one solid affordance in the bar.
+ * The mailto Build pill was removed 11 Sep 2026 on request; the contact
+ * question was reopened 12 Sep 2026 and parked on LinkedIn.
  */
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -54,6 +69,21 @@ export default function Navbar() {
           </svg>
           <span className="font-mono text-[12px] tracking-tight">GitHub</span>
         </a>
+
+        {LINKEDIN_URL && (
+          <a
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Gabe Mills on LinkedIn"
+            className="group flex shrink-0 items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-3.5 py-1.5 text-text-primary transition-colors hover:border-[rgba(255,177,94,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
+          >
+            <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current" aria-hidden="true">
+              <path d="M13.63 13.63h-2.37V9.92c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97v3.77H6.22V6h2.28v1.04h.03c.32-.6 1.09-1.24 2.25-1.24 2.4 0 2.85 1.58 2.85 3.64v4.19zM3.56 4.96a1.38 1.38 0 1 1 0-2.75 1.38 1.38 0 0 1 0 2.75zm1.19 8.67H2.37V6h2.38v7.63zM14.81 0H1.18C.53 0 0 .52 0 1.16v13.68C0 15.48.53 16 1.18 16h13.63c.65 0 1.19-.52 1.19-1.16V1.16C16 .52 15.46 0 14.81 0z" />
+            </svg>
+            <span className="font-mono text-[12px] tracking-tight">LinkedIn</span>
+          </a>
+        )}
       </div>
     </motion.nav>
   );

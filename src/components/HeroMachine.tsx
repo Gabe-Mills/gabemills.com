@@ -8,6 +8,15 @@ import { motion } from "framer-motion";
  * behind it. Display type is Instrument Serif; the only thick-glass surfaces on
  * the site live here.
  */
+/** the separator in the positioning line — spaced for the 0.26em tracking */
+function Dot() {
+  return (
+    <span aria-hidden="true" className="mx-2.5 text-muted/45 sm:mx-3">
+      ·
+    </span>
+  );
+}
+
 export default function HeroMachine({ isReady }: { isReady: boolean }) {
   return (
     <section
@@ -46,29 +55,67 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
         }}
       >
         <motion.h1
-          className="select-none font-display font-normal leading-[0.9] tracking-[-0.02em] text-[17vw] sm:text-[15vw] md:text-[12vw] lg:text-[158px]"
+          className="wordmark select-none font-display font-normal leading-[0.9] tracking-[-0.02em] text-[17vw] sm:text-[15vw] md:text-[12vw] lg:text-[158px]"
           initial={{ opacity: 0, filter: "blur(18px)", y: 18 }}
           animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
           transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            backgroundImage:
-              "linear-gradient(96deg, #FFE9CC 0%, #FFFFFF 34%, #FFB673 58%, #FFE9CC 100%)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            filter: "drop-shadow(0 10px 66px rgba(255,120,40,0.28))",
-          }}
         >
           <span className="block sm:inline">GABE</span>{" "}
           <span className="block sm:inline">MILLS</span>
         </motion.h1>
 
-        {/* The wordmark is the entire hero. Removed on request, in order: the
-            positioning line and both CTAs, then the "Systems emerging from the
-            dark" eyebrow and the "Scroll to wake the machine" label. The
-            animated capsule below survives deliberately — it is a graphic, not
-            text, and with no copy left it is the only thing indicating the page
-            continues past the first screen. */}
+        {/* Two lines, and they are the whole argument.
+
+            The site spent a week as a pure visual index — 28 words, no
+            positioning, no role — which looks confident and tells a stranger
+            nothing. A portfolio has about three seconds to answer "what does
+            this person do" before someone decides how hard to look. This is
+            that answer, at the size and restraint the rest of the page earns:
+            one line of discipline, one line of employer, mono, small, quiet.
+
+            Both are lifted from Gabe's own profile README rather than written
+            fresh, so the site and the GitHub page say the same thing. */}
+        <motion.p
+          className="on-field mt-8 font-mono text-[11.5px] uppercase tracking-[0.26em] text-text-primary/80 sm:text-[13px]"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          GPU cloud
+          <Dot />
+          native Apple apps
+          <Dot />
+          creative tech
+        </motion.p>
+
+        <motion.p
+          className="on-field mt-3.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-mono text-[11px] tracking-[0.05em] text-muted"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.35, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <span className="uppercase tracking-[0.22em] text-muted/60">Currently</span>
+          <a
+            href="https://massedcompute.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-1 text-[#FFB15E] underline decoration-[rgba(255,177,94,0.35)] underline-offset-[4px] transition-colors hover:decoration-[rgba(255,177,94,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
+          >
+            Massed Compute
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M7 17L17 7M17 7H9M17 7V15"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <span className="text-muted/70">
+            NVIDIA GPU cloud — recipes, marketplace, design
+          </span>
+        </motion.p>
       </div>
 
       {/* scroll indicator */}

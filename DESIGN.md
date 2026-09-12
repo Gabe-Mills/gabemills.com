@@ -814,3 +814,96 @@ their list, no horizontal overflow, no console errors. Type scales `clamp(18px, 
 `BubbleField.tsx` is deleted. `Bubble.tsx` stays — the GitHub section still uses it for the
 language legend, where a chip is genuinely a key to the bar directly above it rather than a
 container around a word.
+
+---
+
+## Making it work as a portfolio, not just as a page (12 Sep 2026)
+
+The site had been optimised for one thing — looking good in the first screenshot — and it had got
+there. What it could not do was **argue for Gabe**. A stranger landed on a wordmark and a starfield
+and had no way to learn what he does, whether he built the things in the tiles, or how to reach
+him. Four changes, all of them information rather than decoration.
+
+### 1. Two lines under the wordmark
+```
+GPU CLOUD · NATIVE APPLE APPS · CREATIVE TECH
+CURRENTLY  Massed Compute ↗  NVIDIA GPU cloud — recipes, marketplace, design
+```
+Mono, 11–13px, well below the serif. The "no text, all visual" direction from 11 Sep stands for the
+*body* of the page; it cannot stand for the one sentence that says who this is. A portfolio has
+about three seconds to answer "what does this person do" before the reader decides how hard to
+look, and the answer was previously 13px grey, halfway down, inside the GitHub card.
+
+Both lines are lifted from Gabe's own profile README, so the site and the GitHub page say the same
+thing rather than two slightly different things.
+
+**Massed Compute is a "currently" line, not a fourth tile.** It's the most serious work on the
+page and it was invisible — but it's a job, not a personal build, and putting it in the project row
+would have implied he built the company's site. The line is honest about what it is and lands in
+the first three seconds, which is where it does the most good.
+
+### 2. The tiles say what he did
+Each tile was a screenshot, a name and a host. Nobody could tell whether he built the thing or
+skinned it. `role` and `status` were already in `projects.ts` and had never been rendered; a new
+`blurb` field carries one present-tense line each. (`summary` stays, unused by the tile — it is two
+sentences written for a case-study layout that no longer exists, and at tile width it wraps to five
+lines nobody reads.)
+
+```
+Gcoolers
+gcoolers.com · Author and maintainer · v3.06 · MIT
+Fan curves and live temperatures for Apple Silicon, entirely in user space.
+```
+
+### 3. A held slot for LinkedIn
+Gabe has no profile yet and asked for the slot to be built. `LINKEDIN_URL` at the top of
+`Navbar.tsx` is an empty string; the button — icon, label, sizing, hover, focus ring — renders only
+when it isn't. **The live site never carries a dead link, and turning it on is one line.**
+
+Still open: there is no contact path on the site at all. GitHub is the only outbound personal link,
+which is where a client who likes the work has to give up. Flagged twice now.
+
+### 4. Effects, in the site's own language
+
+**The cursor's light pool over the index.** The term under the pointer goes fully hot, its
+neighbours warm in proportion to distance, and the pool travels with the cursor — the constellation's
+own cursor gravity, applied to type. A plain `:hover` lights one word and leaves seventy-four inert,
+which on a page whose entire background reacts to the pointer makes the type read as a deader layer.
+
+| | |
+|---|---|
+| reach | `178px` |
+| falloff | `(1 - d/r) ^ 1.75` — the exponent is what gives the pool a soft edge rather than a disc |
+| smoothing | a `140ms linear` CSS transition on the derived properties, not a JS lerp |
+| cost | one custom property per term; ~7 of 75 terms are non-zero at any moment |
+
+The loop writes exactly one number per term — `--w`, 0 to 1 — and every colour, glow and offset
+derives from it in CSS. Centres are measured once, on `fonts.ready`, and on resize; never in the
+loop. It runs only while the pointer is inside the section, and not at all on a device that fails
+`(hover: hover) and (pointer: fine)`.
+
+Two details worth keeping: the CSS transition is what supplies the trailing smoothness, so there is
+no easing code at all; and `:focus-visible` needs `--w: 1 !important` to beat the inline value the
+loop writes every frame — an author `!important` is the only thing that outranks an inline
+declaration.
+
+**Heat through the wordmark, once.** The background is three copies of the resting palette side by
+side (`background-size: 300%`) with a saturated `#FF8A3C` core built into the middle one, and the
+sweep is `background-position` travelling `0% → 100%` over 1.8s after a 0.75s delay. It ends *on*
+the last third, so the resting appearance is the animation's own final keyframe and cannot drift
+out of sync with it.
+
+One element, one animation, no duplicated text node — which matters, because the wordmark breaks
+into two lines on narrow screens and any `content: attr()` overlay would flatten it to one. The
+bloom is a `text-shadow` rather than a `drop-shadow` filter because **framer-motion owns `filter`
+on that element** (it animates the entrance blur) and would clobber it; `text-shadow` paints the
+glyph silhouette even under a transparent fill, so it works with `background-clip: text`.
+
+Direction of travel is the easy thing to get backwards: increasing `background-position` slides the
+window right across the image, so a feature in the middle of the image enters at the left edge and
+exits right. Left-to-right sweep means `0% → 100%` with the resting palette at the **end**.
+
+### Verified
+`1440 / 375`, plus `prefers-reduced-motion`: 60fps with the pointer live in the field, no console
+errors, no horizontal overflow at any width. Reduced motion reports `animation-name: none` on the
+wordmark and still rests on the correct third. The nav reports zero links without an `href`.

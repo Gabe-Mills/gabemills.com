@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
+import { useReducedMotion } from "framer-motion";
 import { stack } from "../data/stack";
 import type { Chip } from "../data/stack";
 
@@ -57,9 +59,129 @@ function legible(brand: string): string {
   return hex(c);
 }
 
+/** how far the cursor's warmth reaches, in px */
+const REACH = 178;
+/** falloff shape — above 1 the pool has a soft edge instead of a hard disc */
+const FALLOFF = 1.75;
+
+/**
+ * The cursor drags a pool of ember light through the index.
+ *
+ * This is the constellation's own cursor gravity applied to type: the term you
+ * are on goes fully hot, its neighbours warm in proportion to distance, and the
+ * pool travels with the pointer. A plain `:hover` lights exactly one word and
+ * leaves the other seventy-four inert, which on a page whose entire background
+ * reacts to the cursor reads as the type being a separate, deader layer.
+ *
+ * The loop writes one number — `--w` — per term and nothing else; every colour,
+ * glow and offset derives from it in CSS. Term centres are measured once and on
+ * resize, never inside the loop, so a frame is 75 subtractions and at most 75
+ * style writes. It runs only while the pointer is actually inside the section.
+ */
+function useProximityField(reduced: boolean) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (reduced) return;
+    const root = ref.current;
+    if (!root) return;
+    // a device without hover gets nothing to drive the field
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    let terms: HTMLElement[] = [];
+    let centres: { x: number; y: number }[] = [];
+    let sent: number[] = [];
+
+    const measure = () => {
+      terms = Array.from(root.querySelectorAll<HTMLElement>(".term"));
+      const rr = root.getBoundingClientRect();
+      centres = terms.map((t) => {
+        const r = t.getBoundingClientRect();
+        return { x: r.left - rr.left + r.width / 2, y: r.top - rr.top + r.height / 2 };
+      });
+      sent = terms.map(() => 0);
+    };
+    measure();
+
+    // fonts land after first paint and every centre moves when they do
+    if (document.fonts?.ready) document.fonts.ready.then(measure).catch(() => {});
+
+    let mx = 0;
+    let my = 0;
+    let inside = false;
+    let raf = 0;
+
+    const frame = () => {
+      raf = 0;
+      const rr = root.getBoundingClientRect();
+      const px = mx - rr.left;
+      const py = my - rr.top;
+      for (let i = 0; i < terms.length; i++) {
+        const c = centres[i];
+        let w = 0;
+        if (inside) {
+          const dx = px - c.x;
+          const dy = py - c.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < REACH) w = (1 - d / REACH) ** FALLOFF;
+        }
+        // skip the write when nothing perceptible changed — most of the 75
+        // terms are far from the cursor and already sitting at 0
+        if (Math.abs(w - sent[i]) < 0.004) continue;
+        sent[i] = w;
+        terms[i].style.setProperty("--w", w.toFixed(3));
+      }
+      if (inside) raf = requestAnimationFrame(frame);
+    };
+
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+
+    const onMove = (e: PointerEvent | MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      inside = true;
+      kick();
+    };
+    const onLeave = () => {
+      inside = false;
+      // one last frame to zero everything out; the CSS transition eases it down
+      kick();
+    };
+
+    root.addEventListener("pointermove", onMove);
+    root.addEventListener("mousemove", onMove as EventListener);
+    root.addEventListener("pointerleave", onLeave);
+
+    let t: number | undefined;
+    const onResize = () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(measure, 150);
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(t);
+      root.removeEventListener("pointermove", onMove);
+      root.removeEventListener("mousemove", onMove as EventListener);
+      root.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("resize", onResize);
+      terms.forEach((el) => el.style.removeProperty("--w"));
+    };
+  }, [reduced]);
+
+  return ref;
+}
+
 export default function StackSection() {
+  const reduced = useReducedMotion();
+  const ref = useProximityField(!!reduced);
+
   return (
     <section
+      ref={ref}
       id="stack"
       className="relative z-10 scroll-mt-28 px-5 pb-20 md:pb-28"
       aria-label="Stack"
