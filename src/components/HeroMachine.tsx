@@ -66,6 +66,25 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
             "translate3d(calc(var(--px,0) * -8px), calc(var(--py,0) * -8px), 0)",
         }}
       >
+        {/* The mark leads, the name follows.
+            It sits above the wordmark rather than beside it because the two say
+            the same thing — "GM" over "GABE MILLS" side by side reads as the
+            name printed twice. Stacked, the mark is a crest and the serif is
+            the caption, which is the relationship a monogram actually wants.
+            Kept deliberately small: at hero scale it would fight the wordmark
+            for the one thing the first screen has to deliver. */}
+        <motion.img
+          src="/logo-gm.webp"
+          alt=""
+          width={170}
+          height={100}
+          className="mb-7 h-[58px] w-auto sm:mb-8 sm:h-[68px] md:h-[82px]"
+          initial={{ opacity: 0, scale: 0.92, filter: "blur(10px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          decoding="async"
+        />
+
         <motion.h1
           className="wordmark select-none font-display font-normal leading-[0.9] tracking-[-0.02em] text-[17vw] sm:text-[15vw] md:text-[12vw] lg:text-[158px]"
           initial={{ opacity: 0, filter: "blur(18px)", y: 18 }}

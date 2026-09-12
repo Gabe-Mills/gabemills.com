@@ -43,12 +43,25 @@ export default function Navbar() {
             : "border-white/8 bg-surface/40 backdrop-blur-md"
         }`}
       >
+        {/* The mark, not the letters "GM".
+            It rides a wider pill than the old 32px circle because the monogram
+            is 1.7:1 — squeezing it into a circle would have meant showing it at
+            about 18px, and it is already at the edge of legibility at 30. The
+            asset is a separate, punchier cut of the logo for exactly this
+            reason; see DESIGN.md. */}
         <a
           href="#top"
           aria-label="Gabe Mills — back to top"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/[0.04] font-mono text-[11px] font-semibold tracking-tight text-text-primary transition-colors hover:border-[rgba(255,177,94,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
+          className="flex h-8 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/[0.04] px-2.5 transition-colors hover:border-[rgba(255,177,94,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB15E]"
         >
-          GM
+          <img
+            src="/logo-gm-nav.webp"
+            alt=""
+            width={51}
+            height={30}
+            className="h-[19px] w-auto"
+            decoding="async"
+          />
         </a>
 
         <a

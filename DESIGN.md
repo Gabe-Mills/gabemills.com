@@ -946,3 +946,67 @@ the viewport at every width, no console errors.
 
 **Unverified, and can't be from here:** LinkedIn serves bots an auth wall, so the profile URL was
 taken as given rather than fetched. Worth opening once in a logged-out browser.
+
+---
+
+## The GM mark, recoloured (12 Sep 2026)
+
+Gabe supplied his monogram — rendered chrome with an electric-blue rim light on
+black — and asked for it on the site in four places: favicon, share card, nav
+pill, and above the hero. **Colour was the real question and he answered it:
+recolour to ember everywhere**, rather than accept a cold accent inside a warm
+palette or split his identity across two finishes.
+
+Full derivation lives in `brand/README.md` with the three scripts that produce
+every asset from the source. The design decisions, briefly:
+
+**Hue is thrown away, not rotated.** `1-mark.py` reduces the source to luminance
+and rebuilds colour from an ember ramp mirroring the wordmark's own gradient —
+deep ember in shadow, `#E4692C` → `#FFB15E` through the mid-tones, near-white at
+the specular highlights. A flat tint caps highlights at the accent colour and
+the metal stops reading as metal.
+
+**Alpha from luminance**, so the black ground clears and the rim glow fades out
+rather than ending on a box edge. The trade: dark facets are semi-transparent.
+Invisible on this page — near-black bevel over near-black page — and fatal on a
+light one, which is why every icon ships on its own dark tile instead of
+transparent. A browser tab can be light.
+
+**Two cuts, because 32px is a different medium.** The full mark is metal: thin
+specular outlines, dark bevels, wide tonal range — all detail, and detail dies
+first under a 5× downscale. At 32px it was an orange smudge. `mark-small` pushes
+alpha toward binary and compresses the fill into the top of the ramp, so the
+strokes stay solid and the mark sits at accent brightness instead of averaging
+down to mud. Nav pill and favicon use it; everything larger uses the full cut.
+
+### Placement
+- **Nav** — the pill went from a 32px circle to a 51px-wide pill, because the
+  monogram is 1.7:1 and a circle would have meant showing it at ~18px. It is at
+  19px now and that is close to the floor. Bar: 267px → 289px, still inside a
+  320px viewport.
+- **Hero** — above the wordmark, not beside it. Side by side, "GM" and "GABE
+  MILLS" read as the name printed twice; stacked, the mark is a crest and the
+  serif is its caption. Deliberately small (58 / 68 / 82px) so it doesn't fight
+  the wordmark for the first screen.
+- **Icons** — 32 / 180 / 192, all tiled. `favicon.svg` deleted.
+- **Share card** — rebuilt from scratch; see below.
+
+### The share card was stale
+`og.jpg` still showed the pre-constellation design, and its alt text still
+described "a glowing ember-coloured planet" — a planet removed days earlier.
+Anyone who had shared the link since was posting a picture of a site that no
+longer existed.
+
+Rebuilt at 1200×630 from `~/.gmshots/og.html`, screenshot at DPR 2 and
+downsampled, 45KB. It uses the real Instrument Serif and JetBrains Mono, the
+wordmark's actual gradient, and a **seeded** still of the constellation — seeded
+because an OG image that changes on every rebuild is a diff for no reason. The
+mark is inlined as a data URI, so the card has no external image dependency and
+**will not pick up a new mark on its own** if the logo is ever replaced.
+
+Alt text now describes what is actually in the frame.
+
+### Verified
+`1440 / 700 / 375 / 320`: zero clipped text runs, three nav links all with an
+`href`, bar inside the viewport at every width, no console errors. All six image
+assets present in `dist/`.
