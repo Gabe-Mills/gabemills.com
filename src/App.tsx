@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Navbar from "./components/Navbar";
-import HeroMachine from "./components/HeroMachine";
+import WallHero from "./components/WallHero";
 import ScrollMachine from "./components/ScrollMachine";
 import GitHubProfile from "./components/GitHubProfile";
 import StackSection from "./components/StackSection";
@@ -24,7 +24,7 @@ export default function App() {
 
       <Navbar />
       <main className="relative z-10">
-        <HeroMachine isReady />
+        <WallHero />
         {/* desktop-only cinematic sequence; returns null on phones */}
         <ScrollMachine progressRef={progressRef} />
         <GitHubProfile />

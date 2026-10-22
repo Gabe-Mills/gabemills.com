@@ -1,0 +1,23 @@
+{
+  // gabemills.com inbox (T731): the orb's question / request forms land here,
+  // and Gabe's Mac pulls them (see inbox/README.md).
+  "name": "gabemills-inbox",
+  "main": "src/index.ts",
+  "account_id": "354ad83c47d3f39d7d200155e84446ab",
+  "compatibility_date": "2026-07-08",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "gabemills.com/api/inbox*", "zone_name": "gabemills.com" }],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://gabemills.com,https://www.gabemills.com"
+  },
+  // id is filled in when the namespace is created at deploy time
+  "kv_namespaces": [{ "binding": "INBOX", "id": "929f4bdfb9174f6a8fcd4f207c9d0dcc" }],
+  // INBOX_TOKEN is a secret: `wrangler secret put INBOX_TOKEN --config inbox/wrangler.jsonc`
+  "env": {
+    "dev": {
+      "vars": { "ALLOWED_ORIGINS": "http://localhost:5188,http://127.0.0.1:5188" },
+      "kv_namespaces": [{ "binding": "INBOX", "id": "dev-inbox" }]
+    }
+  }
+}

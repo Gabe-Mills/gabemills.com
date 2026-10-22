@@ -23,7 +23,7 @@ import { motion } from "framer-motion";
  */
 function Sep() {
   return (
-    <span aria-hidden="true" className="text-muted/45">
+    <span aria-hidden="true" className="text-muted/75">
       {" ·"}
     </span>
   );
@@ -128,7 +128,7 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.35, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="uppercase tracking-[0.22em] text-muted/60">Currently</span>
+          <span className="uppercase tracking-[0.22em] text-muted">Currently</span>
           <a
             href="https://massedcompute.com"
             target="_blank"
@@ -146,7 +146,11 @@ export default function HeroMachine({ isReady }: { isReady: boolean }) {
               />
             </svg>
           </a>
-          <span className="text-muted/70">
+          {/* Measured 2.66:1 against rendered pixels at `text-muted/70` — the
+              constellation animates bright lines behind it, so the CSS-only
+              figure (4.31:1) was optimistic. This is the only line in the first
+              viewport that says what Gabe does; it reads at AA now. */}
+          <span className="text-text-primary/75">
             NVIDIA GPU cloud — recipes, marketplace, design
           </span>
         </motion.p>

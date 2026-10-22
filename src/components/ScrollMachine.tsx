@@ -92,25 +92,30 @@ export default function ScrollMachine({ progressRef }: Props) {
         },
       });
 
-      // 15-30 boot: modules appear as silhouettes near the core
-      tl.to(modules, { opacity: 0.3, scale: 0.5, filter: "blur(10px)", z: -120, duration: 14, stagger: 2 }, 16);
+      // 0-12 boot: modules appear as silhouettes near the core.
+      // Was `}, 16)` against a 340vh reserve, which meant the first ~16% of
+      // 3.4 screens — a full viewport of scrolling — ran with the modules still
+      // at opacity 0. Measured at 37 scroll positions, y=573 to y=1527 held
+      // under 5% frame coverage with 2 text nodes on screen. The sequence now
+      // starts on the first pixel of its own section.
+      tl.to(modules, { opacity: 0.45, scale: 0.5, filter: "blur(10px)", z: -120, duration: 12, stagger: 1.5 }, 0);
 
-      // 30-45 open: separate outward
-      tl.to(m0, { left: `${50 - col * 100}%`, scale: 0.72, opacity: 0.65, filter: "blur(4px)", z: 0, duration: 15 }, 30);
-      tl.to(m1, { left: "50%", scale: 0.72, opacity: 0.65, filter: "blur(4px)", z: 0, duration: 15 }, 30);
-      tl.to(m2, { left: `${50 + col * 100}%`, scale: 0.72, opacity: 0.65, filter: "blur(4px)", z: 0, duration: 15 }, 30);
+      // 14-28 open: separate outward
+      tl.to(m0, { left: `${50 - col * 100}%`, scale: 0.72, opacity: 0.65, filter: "blur(4px)", z: 0, duration: 14 }, 14);
+      tl.to(m1, { left: "50%", scale: 0.72, opacity: 0.65, filter: "blur(4px)", z: 0, duration: 14 }, 14);
+      tl.to(m2, { left: `${50 + col * 100}%`, scale: 0.72, opacity: 0.65, filter: "blur(4px)", z: 0, duration: 14 }, 14);
 
-      // 45-90 spotlight each in turn
-      spotlight(tl, modules, 0, 45, col);
-      spotlight(tl, modules, 1, 60, col);
-      spotlight(tl, modules, 2, 75, col);
+      // 30-80 spotlight each in turn
+      spotlight(tl, modules, 0, 30, col);
+      spotlight(tl, modules, 1, 48, col);
+      spotlight(tl, modules, 2, 66, col);
 
-      // 90-100 align into a clean row
+      // 82-94 align into a clean row
       const gap = isMobile ? 0 : 0.32;
       const fin = isMobile ? 0.6 : 0.82;
-      tl.to(m0, { left: `${50 - gap * 100}%`, top: "52%", scale: fin, opacity: 1, filter: "blur(0px)", z: 0, duration: 10 }, 90);
-      tl.to(m1, { left: "50%", top: "52%", scale: fin, opacity: 1, filter: "blur(0px)", z: 0, duration: 10 }, 90);
-      tl.to(m2, { left: `${50 + gap * 100}%`, top: "52%", scale: fin, opacity: 1, filter: "blur(0px)", z: 0, duration: 10 }, 90);
+      tl.to(m0, { left: `${50 - gap * 100}%`, top: "52%", scale: fin, opacity: 1, filter: "blur(0px)", z: 0, duration: 12 }, 82);
+      tl.to(m1, { left: "50%", top: "52%", scale: fin, opacity: 1, filter: "blur(0px)", z: 0, duration: 12 }, 82);
+      tl.to(m2, { left: `${50 + gap * 100}%`, top: "52%", scale: fin, opacity: 1, filter: "blur(0px)", z: 0, duration: 12 }, 82);
     }, sectionRef);
 
     return () => ctx.revert();
@@ -122,7 +127,7 @@ export default function ScrollMachine({ progressRef }: Props) {
   if (isMobile) return null;
 
   return (
-    <div ref={sectionRef} className="relative min-h-[340vh]">
+    <div ref={sectionRef} className="relative min-h-[210vh]">
       <div
         ref={sceneRef}
         className="relative flex h-screen w-full items-center justify-center overflow-hidden"

@@ -20,9 +20,9 @@ import { useEffect, useRef, type MutableRefObject } from "react";
  * 3. SIGNAL PULSES. Bright packets travel along links between nodes. The
  *    network stops being scenery and starts looking like it's transmitting.
  *
- * 4. BOKEH ON THE NEAR PLANE. Sheets sweeping past the camera render their
- *    nodes as soft gradients instead of hard dots, so the foreground goes out
- *    of focus the way a real lens would.
+ * 4. BOKEH ON THE PASSING SHEET ONLY. The one shell about to fly through the
+ *    camera goes soft; everything else stays a hard 1px stroke. A wider bokeh
+ *    band made the whole field read as out of focus.
  *
  * 5. RADIAL MOTION STREAKS. Scroll fast and nodes stretch along their vector
  *    out from the vanishing point — the correct direction for forward motion,
@@ -123,11 +123,13 @@ export default function ConstellationField({
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 3);
       w = Math.max(1, Math.round(rect.width));
       h = Math.max(1, Math.round(rect.height));
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       EXTENT = (w * REF_Z) / (2 * FOCAL);
       LINK_W = EXTENT * 0.4;
@@ -237,8 +239,8 @@ export default function ConstellationField({
         // ---- links, one batched stroke per sheet ----
         const linkPx = LINK_W * scale;
         const linkPx2 = linkPx * linkPx;
-        ctx.lineWidth = Math.max(0.35, 0.28 + fog * 1.0);
-        ctx.strokeStyle = `rgba(255,${Math.round(122 + fog * 76)},${Math.round(54 + fog * 64)},${0.03 + fog * 0.26})`;
+        ctx.lineWidth = Math.max(1, 0.9 + fog * 0.55);
+        ctx.strokeStyle = `rgba(255,${Math.round(122 + fog * 76)},${Math.round(54 + fog * 64)},${0.05 + fog * 0.28})`;
         ctx.beginPath();
         for (let i = 0; i < s.pts.length; i++) {
           const a = s.pts[i];
@@ -276,9 +278,9 @@ export default function ConstellationField({
         ctx.stroke();
 
         // ---- nodes ----
-        const r = 0.55 + fog * 2.3;
+        const r = 1.15 + fog * 1.7;
         const nodeA = 0.08 + fog * 0.6;
-        const bokeh = s.z < NEAR * 3.4; // sheet is sweeping past — throw it out of focus
+        const bokeh = s.z < NEAR * 1.5; // only the sheet flying through the lens
 
         if (streak > 0.04) {
           // radial motion streaks: the correct blur direction for forward travel
@@ -304,7 +306,7 @@ export default function ConstellationField({
             // Chromatic bokeh: warm and cool lobes offset a couple of pixels
             // apart, the way a fast lens fringes a bright out-of-focus point.
             // Additive blending fuses them back to near-white in the core.
-            const br = r * 5.5;
+            const br = r * 2.2;
             const warm = ctx.createRadialGradient(p.sx + 1.6, p.sy - 1.1, 0, p.sx + 1.6, p.sy - 1.1, br);
             warm.addColorStop(0, `rgba(255,176,104,${nodeA * 0.42})`);
             warm.addColorStop(0.5, `rgba(228,116,54,${nodeA * 0.14})`);
@@ -498,6 +500,12 @@ export default function ConstellationField({
     window.addEventListener("pointerdown", onDown, { passive: true });
 
     const loop = (now: number) => {
+      // the home wall is a full-screen WebGL scene; drawing this underneath it is wasted work
+      if (document.documentElement.dataset.wall === "on") {
+        last = 0;
+        raf = requestAnimationFrame(loop);
+        return;
+      }
       const dt = last ? Math.min((now - last) / 1000, 0.05) : 0.016;
       last = now;
       draw(dt, now / 1000);

@@ -57,3 +57,7 @@ next-env.d.ts
 
 # third-party skill bundle, not site code
 /.claude
+
+# inbox worker local secrets
+inbox/.dev.vars
+inbox/.wrangler
