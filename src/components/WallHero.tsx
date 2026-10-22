@@ -9,7 +9,6 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import {
   wallTiles,
-  wallStats,
   topics,
   faq,
   requestKinds,
@@ -301,42 +300,6 @@ function hashOrder(n: number) {
 const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
 const barFor = (aspect: number, target: number) => Math.max(0, (1 - aspect / target) * 0.5);
 const smooth = (x: number, a: number, b: number) => THREE.MathUtils.smoothstep(x, a, b);
-
-function useCountUp(target: number, start: boolean, ms = 1600) {
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const step = (now: number) => {
-      const k = Math.min(1, (now - t0) / ms);
-      setV(Math.round(target * (1 - Math.pow(1 - k, 4))));
-      if (k < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [target, start, ms]);
-  return v;
-}
-
-function Stat({ value, suffix, label, start, delay }: { value: number; suffix: string; label: string; start: boolean; delay: number }) {
-  const [go, setGo] = useState(false);
-  useEffect(() => {
-    if (!start) return;
-    const id = window.setTimeout(() => setGo(true), delay);
-    return () => window.clearTimeout(id);
-  }, [start, delay]);
-  const v = useCountUp(value, go);
-  return (
-    <div className={`wall-stat flex items-baseline gap-2 whitespace-nowrap ${go ? "is-in" : ""}`}>
-      <span className="font-display text-[24px] leading-none text-text-primary tabular-nums">
-        {v}
-        <span className="text-[#FFB15E]">{suffix}</span>
-      </span>
-      <span className="hud-label text-muted">{label.toUpperCase()}</span>
-    </div>
-  );
-}
 
 /** Types a line out, one character at a time; restarts when the text changes. */
 function Typed({ text, speed = 22 }: { text: string; speed?: number }) {
@@ -1883,7 +1846,6 @@ export default function WallHero() {
   }, []);
 
   const inMenu = phase === "menu";
-  const shown = inMenu && !focused;
   const current = topics.find((t) => t.id === topic);
 
   const pick = (id: TopicId) => {
@@ -1922,10 +1884,6 @@ export default function WallHero() {
       setSend("error");
       apiRef.current?.orbSay("listening");
     }
-  };
-  const workWithMe = () => {
-    pick("sites");
-    goSites("request");
   };
 
   const orbLine = !topic
@@ -1973,13 +1931,6 @@ export default function WallHero() {
     >
       <div ref={hostRef} className="absolute inset-0" aria-hidden="true" />
 
-      {/* a quiet ground for the type, only once the room is lit */}
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 transition-opacity duration-1000 ${inMenu ? "opacity-100" : "opacity-0"}`}
-        style={{ background: "radial-gradient(55% 50% at 0% 30%, rgba(3,3,3,0.78), rgba(3,3,3,0) 70%)" }}
-      />
-
       <div ref={tagRef} aria-hidden="true" className="hud-tag pointer-events-none absolute left-0 top-0 z-10 opacity-0">
         <p className="font-display text-[19px] leading-none text-text-primary" />
         <p className="mt-1.5 font-mono text-[9px] tracking-[0.2em] text-[#FFB15E]" />
@@ -2020,36 +1971,6 @@ export default function WallHero() {
         </span>
       </button>
 
-      {/* headline */}
-      <div className={`wall-reveal pointer-events-none absolute left-5 top-[calc(var(--bar)+28px)] z-20 max-w-[36rem] md:left-14 md:top-[calc(var(--bar)+8vh)] ${shown ? "is-in" : ""} ${topic ? "!opacity-0" : ""}`}>
-        <p className={phone ? "text-[13px] tracking-[0.04em] text-[#FFB15E]" : "hud-label text-[#FFB15E]"}>{phone ? "Websites · Games · AI tools" : "WEBSITES · GAMES · AI TOOLS"}</p>
-        <h1 className="mt-3 font-display text-[44px] leading-[0.95] tracking-[-0.01em] text-text-primary md:text-[64px]">
-          I build things
-          <br />
-          people <em className="text-[#FFB15E]">remember.</em>
-        </h1>
-        <div className="mt-6 hidden w-max grid-cols-2 gap-x-8 gap-y-3 md:grid">
-          {wallStats.map((st, i) => (
-            <Stat key={st.label} {...st} start={inMenu} delay={500 + i * 140} />
-          ))}
-        </div>
-        <div className="mt-7 flex items-center gap-3">
-          <button type="button" onClick={workWithMe} className={`hud-btn hud-btn-primary pointer-events-auto ${phone ? "sheet-btn hero-btn" : ""}`}>
-            {phone ? "Work with me →" : "WORK WITH ME →"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (phone) setSheetMin(false);
-              else setMenuOpen(true);
-              apiRef.current?.orbSay("hello");
-            }}
-            className={`hud-btn pointer-events-auto ${phone ? "sheet-btn hero-btn" : ""}`}
-          >
-            {phone ? "Ask CRISP" : "ASK CRISP"}
-          </button>
-        </div>
-      </div>
 
       {/* ---------- CRISP: a floating panel on desktop, a bottom sheet on phones ---------- */}
       <div

@@ -500,8 +500,9 @@ export default function ConstellationField({
     window.addEventListener("pointerdown", onDown, { passive: true });
 
     const loop = (now: number) => {
-      // the home wall is a full-screen WebGL scene; drawing this underneath it is wasted work
-      if (document.documentElement.dataset.wall === "on") {
+      // the home wall is a full-screen WebGL scene; drawing this underneath it is wasted work,
+      // but only while it covers the whole screen, or the page below it scrolls in black
+      if (document.documentElement.dataset.wall === "on" && window.scrollY < 2) {
         last = 0;
         raf = requestAnimationFrame(loop);
         return;
