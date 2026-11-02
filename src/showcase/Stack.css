@@ -1,0 +1,74 @@
+/* Stack, v2 calm: five columns of plain mono text on a hairline. Tokens live on .sc. */
+.st-head { grid-column: 1 / span 8; display: grid; gap: 20px; }
+.st-head .sc-title { justify-self: start; padding-bottom: .08em; font-size: clamp(40px, 4.6vw, 64px); }
+.st-sub { max-width: 46ch; }
+
+/* the columns use the same 12-column grid as .sc-wrap */
+.st-cols {
+  margin-top: clamp(40px, 7vh, 72px);
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--col-gap); row-gap: 56px; grid-auto-flow: row dense;
+}
+.st-group {
+  border-top: 1px solid var(--line); padding-top: 18px; min-width: 0;
+  /* columns fly up on their own depth layer, then keep a slow drift for the whole pin */
+  opacity: min(1, calc(var(--t, 1) * 3));
+  transform: translate3d(0, calc((1 - var(--t, 1)) * var(--z, 1) * var(--fly, 90px)), 0);
+  translate: 0 calc(clamp(0, (.75 - var(--p, 1)) / .75, 1) * var(--z, 1) * 14px);
+}
+.st-group--lang { grid-column: span 2; }
+.st-group--libs { grid-column: span 2; }
+.st-group--ai { grid-column: span 2; }
+.st-group--models { grid-column: span 4; }
+.st-group--dev { grid-column: span 2; }
+
+.st-group-title {
+  margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  font: 500 10.5px/1.5 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--dim); min-height: 3em;
+}
+.st-n { color: var(--dim); opacity: .7; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.st-link { opacity: clamp(0, calc(var(--t, 1) * 5 - 4), 1); margin-top: 14px; font-size: 11px; letter-spacing: .08em; text-transform: none; }
+
+.st-items {
+  list-style: none; margin: 16px 0 0; padding: 0;
+  font: 400 13px/1.85 'JetBrains Mono', ui-monospace, monospace; color: var(--muted);
+}
+.st-items li {
+  break-inside: avoid;
+  /* items ink in one after another as the column's --t rises */
+  --ti: clamp(0, calc(var(--t, 1) * (var(--n, 10) + 4) - var(--i, 0) - 2), 1);
+}
+/* brand-colour items turn ember at the end of the pin; the NVIDIA GPU items glow */
+.st-items li.is-accent {
+  --g: clamp(0, calc((var(--p, 1) - .78) * 6), 1);
+  color: color-mix(in oklab, var(--ember) calc(var(--g) * 100%), var(--muted));
+}
+/* phones scroll the content through the stage, so glow each column once it has inked in */
+.sc-scrub[data-positional] .st-items li.is-accent { --g: clamp(0, calc((var(--t, 1) - .9) * 10), 1); }
+.sc-scrub[data-positional] .st-group { --fly: 24px; }
+.st-items li.is-gpu { text-shadow: 0 0 calc(var(--g) * 14px) rgba(228, 105, 44, calc(var(--g) * .7)); }
+.st-group--models .st-items { columns: 2; column-gap: var(--col-gap); }
+
+/* tablet: three across, then Models wide beside Devices */
+@media (max-width: 1080px) {
+  .st-head { grid-column: 1 / -1; }
+  .st-group--lang, .st-group--libs, .st-group--ai, .st-group--dev { grid-column: span 4; }
+  .st-group--models { grid-column: span 8; }
+  .st-group--models .st-items { columns: 3; }
+}
+/* phone: two across, Models full width */
+@media (max-width: 640px) {
+  .st-cols { row-gap: 44px; }
+  .st-group--lang, .st-group--libs, .st-group--ai, .st-group--dev { grid-column: span 6; }
+  .st-group--models { grid-column: 1 / -1; }
+  .st-group--models .st-items { columns: 2; }
+  .st-group-title { min-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-group { opacity: 1; transform: none; translate: none; }
+  .st-items li.is-accent { color: var(--ember); }
+  .st-items li.is-gpu { text-shadow: 0 0 10px rgba(228, 105, 44, .5); }
+  .st-link { opacity: 1; }
+}

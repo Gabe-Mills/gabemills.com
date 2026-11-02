@@ -1,0 +1,101 @@
+/* Engraved scroll intro. Tokens come from DESIGN.md: ground #080605, ink #F3EEE8,
+   ember #E4692C, lit ember #FFB15E. Type: Instrument Serif / JetBrains Mono. */
+.intro { position: relative; background: #080605; }
+.intro-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.intro-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.6s ease; }
+.intro.is-ready .intro-canvas { opacity: 1; }
+.intro-overlay { position: absolute; inset: 0; pointer-events: none; }
+
+/* narration box: the reference's boxed caption, in the site's mono */
+.intro-caption {
+  position: absolute; left: clamp(16px, 4vw, 40px); bottom: clamp(24px, 7vh, 64px);
+  max-width: min(460px, calc(100vw - 32px));
+  padding: 12px 16px 13px; background: #F1E9DE; color: #080605;
+  border: 1.5px solid #080605; box-shadow: 4px 4px 0 #080605;
+  clip-path: inset(0 100% 0 0); transition: clip-path 0.35s cubic-bezier(.7,0,.3,1);
+}
+.intro-caption.is-on { clip-path: inset(0 0 0 0); transition-duration: 0.55s; transition-timing-function: cubic-bezier(.2,.8,.2,1); }
+.intro-caption-n { display: block; font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.22em; color: #E4692C; margin-bottom: 7px; }
+.intro-caption-text { margin: 0; font: 400 clamp(22px, 2.6vw, 30px)/1.12 'Instrument Serif', serif; letter-spacing: -0.005em; }
+
+.intro-hint {
+  position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.3em; text-transform: uppercase; color: #F1E9DE;
+  text-shadow: 0 1px 0 #080605, 0 0 6px rgba(8,6,5,.6); pointer-events: none;
+}
+.intro-hint i { width: 1px; height: 34px; background: currentColor; transform-origin: top; animation: intro-hint 1.6s cubic-bezier(.6,0,.4,1) infinite; }
+@keyframes intro-hint { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+.intro-skip {
+  position: absolute; right: clamp(16px, 4vw, 40px); bottom: clamp(24px, 7vh, 64px);
+  height: 34px; padding: 0 14px; border: 1.5px solid #080605; background: #F1E9DE; color: #080605;
+  font: 500 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.16em; text-transform: uppercase;
+  cursor: pointer; box-shadow: 3px 3px 0 #080605; transition: transform 0.15s, box-shadow 0.15s;
+}
+.intro-skip:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #080605; }
+.intro-skip:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #080605; }
+.intro-skip:focus-visible { outline: 2px solid #FFB15E; outline-offset: 3px; }
+
+.intro-skip, .intro-rail, .intro-hint { transition: opacity 0.4s ease, transform 0.15s, box-shadow 0.15s; }
+.intro.is-done .intro-skip, .intro.is-done .intro-rail { opacity: 0; pointer-events: none; }
+.intro.is-past-intro .intro-skip { opacity: 0; pointer-events: none; }
+
+/* progress rail, right edge */
+.intro-rail { position: absolute; right: clamp(10px, 2vw, 22px); top: 50%; width: 2px; height: 28vh; transform: translateY(-50%); background: rgba(8,6,5,0.45); box-shadow: 0 0 0 1px rgba(241,233,222,0.18); }
+.intro-rail i { position: absolute; inset: 0; background: #F1E9DE; transform-origin: top; transform: scaleY(0); }
+
+@media (max-width: 640px) {
+  .intro-caption { bottom: 74px; right: 16px; }
+  .intro-skip { bottom: 22px; right: 16px; height: 30px; font-size: 10px; }
+  .intro-hint { left: 24px; transform: none; align-items: flex-start; }
+  .intro-rail { display: none; }
+}
+
+.intro-anchor { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; }
+
+/* ---- showcase beats (scenes/lib/project-frame.js) ---- */
+.pf { position: absolute; inset: 0; pointer-events: none; display: none; }
+.pf.is-active { display: block; }
+/* real site layer over the engraved print: hatch lines widen with --d (0 engraved, 1 real) */
+.pf-real {
+  position: absolute; left: 0; top: 0; overflow: hidden; will-change: transform; visibility: hidden;
+  --d: 0;
+  -webkit-mask-image: repeating-linear-gradient(60deg, #000 0 calc(var(--d) * 8px), transparent calc(var(--d) * 8px) 8px);
+          mask-image: repeating-linear-gradient(60deg, #000 0 calc(var(--d) * 8px), transparent calc(var(--d) * 8px) 8px);
+}
+.pf-real img, .pf-real video { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+/* the project card: ink panel, hairline, scrubbed by --c */
+.pf-card {
+  --c: 0; position: absolute; top: 50%; width: min(400px, 34vw);
+  padding: 26px 28px 24px; background: rgba(8, 6, 5, 0.92); color: #F1E9DE;
+  border: 1px solid rgba(241, 233, 222, 0.16); visibility: hidden;
+  /* no see-through card: it wipes in/out as a solid panel (a half-opaque card let the
+     set bleed through the text), and its lines fade on top of that */
+  clip-path: inset(0 calc((1 - var(--c)) * 100%) 0 0);
+  transform: translate3d(calc((1 - var(--c)) * var(--from, -40px)), -50%, 0);
+  pointer-events: auto;
+}
+.pf--left .pf-card { left: clamp(20px, 5vw, 72px); --from: -40px; }
+.pf--right .pf-card { right: clamp(20px, 5vw, 72px); --from: 40px; clip-path: inset(0 0 0 calc((1 - var(--c)) * 100%)); }
+.pf-card > * { opacity: calc(var(--c) * 1.6 - var(--i, 0) * 0.12); }
+.pf-card > :nth-child(2) { --i: 1; } .pf-card > :nth-child(3) { --i: 2; } .pf-card > :nth-child(4) { --i: 3; }
+.pf-card > :nth-child(5) { --i: 4; } .pf-card > :nth-child(6) { --i: 5; } .pf-card > :nth-child(7) { --i: 6; }
+.pf-index { margin: 0; font: 500 11px/1 'JetBrains Mono', monospace; letter-spacing: .18em; color: #9C8D86; text-transform: uppercase; }
+.pf-index span { color: #E4692C; }
+.pf-index em { font-style: normal; margin-left: 10px; color: #F1E9DE; opacity: .7; }
+.pf-title { margin: 14px 0 0; font: 400 clamp(38px, 4vw, 58px)/.95 'Instrument Serif', serif; letter-spacing: -.015em; }
+.pf-blurb { margin: 12px 0 0; font: 400 clamp(19px, 1.6vw, 22px)/1.25 'Instrument Serif', serif; color: #FFB15E; }
+.pf-meta { margin: 16px 0 0; font: 500 11px/1.4 'JetBrains Mono', monospace; letter-spacing: .08em; color: #9C8D86; text-transform: uppercase; }
+.pf-outcome { margin: 14px 0 0; font: 400 14px/1.6 Inter, system-ui, sans-serif; color: rgba(241, 233, 222, .78); }
+.pf-stack { margin: 12px 0 0; font: 400 11px/1.6 'JetBrains Mono', monospace; color: #9C8D86; }
+.pf-visit { display: inline-flex; gap: 6px; margin-top: 20px; font: 500 12px/1 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: #E4692C; text-decoration: none; border-bottom: 1px solid rgba(228, 105, 44, .4); padding-bottom: 5px; }
+.pf-visit:hover { border-color: #E4692C; color: #FFB15E; }
+.pf-visit:focus-visible { outline: 2px solid #FFB15E; outline-offset: 4px; }
+
+@media (max-width: 760px) {
+  .pf-card { top: auto; bottom: 18px; left: 16px !important; right: 16px !important; width: auto; padding: 18px 18px 16px; transform: translate3d(0, calc((1 - var(--c)) * 30px), 0); clip-path: inset(calc((1 - var(--c)) * 100%) 0 0 0); }
+  .pf-outcome { display: none; }
+  .pf-title { font-size: 34px; }
+}

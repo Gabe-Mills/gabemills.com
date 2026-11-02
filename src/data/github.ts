@@ -17,9 +17,10 @@
 export const profile = {
   handle: "Gabe-Mills",
   url: "https://github.com/Gabe-Mills",
-  /** From his own profile README repo description — his words, not mine. */
+  /** From his own profile README repo description, with "GPU cloud" changed to
+   *  "Software development" at his request (2 Nov 2026). */
   tagline:
-    "GPU cloud, native Apple apps, creative tech. Make it useful. Then make it feel right.",
+    "Software development, native Apple apps, creative tech. Make it useful. Then make it feel right.",
   org: "Massed-Compute",
   orgUrl: "https://github.com/Massed-Compute",
   since: "May 2026",

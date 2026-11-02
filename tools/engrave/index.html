@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engrave tool (dev only)</title>
+    <link rel="icon" href="data:," />
+    <style>
+      html, body { margin: 0; background: #080605; color: #9c8d86; font: 12px/1.4 ui-monospace, monospace; }
+      canvas { display: block; }
+      #info { position: fixed; right: 8px; bottom: 8px; background: #080605cc; padding: 4px 8px; white-space: pre; }
+    </style>
+  </head>
+  <body>
+    <!-- Dev-only: not in vite's build input. Renders ?src=<url> through the intro's InkPass. See main.js. -->
+    <canvas id="out"></canvas>
+    <div id="info"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

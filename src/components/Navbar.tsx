@@ -37,11 +37,13 @@ export default function Navbar() {
       data-site-nav
       className="fixed left-0 right-0 top-0 z-50 flex justify-center px-3 pt-3 md:px-4 md:pt-6"
     >
+      {/* No backdrop-blur: the pill floats over the WebGL story, and blurring a canvas
+          that redraws every frame cost real frames (worst in Safari). Near-opaque instead. */}
       <div
         className={`flex max-w-full items-center gap-1.5 rounded-full border px-2 py-2 transition-all duration-500 ${
           scrolled
-            ? "border-white/12 bg-surface/70 shadow-lg shadow-black/40 backdrop-blur-xl"
-            : "border-white/8 bg-surface/40 backdrop-blur-md"
+            ? "border-white/12 bg-surface/95 shadow-lg shadow-black/40"
+            : "border-white/10 bg-surface/90"
         }`}
       >
         {/* The mark, not the letters "GM".

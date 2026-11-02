@@ -34,33 +34,41 @@ export interface Project {
   /** real screenshot of the live site */
   shot: string;
   shotAlt: string;
+  /**
+   * Optional muted scroll-through loop of the live site
+   * (`/showcase/previews/<id>.mp4`, 1920x1200, with a smaller `.webm` beside it).
+   * Lets the showcase develop an engraving into the moving site; `shot` is the
+   * loop's first frame, so it doubles as the poster and the engraved texture.
+   */
+  loop?: string;
 }
 
 export const projects: Project[] = [
   {
-    id: "gcoolers",
-    title: "Gcoolers",
-    url: "https://gcoolers.com/",
-    host: "gcoolers.com",
+    id: "prism-smp",
+    title: "Prism SMP",
+    url: "https://theprismsmp.com/",
+    host: "theprismsmp.com",
     module: "01",
-    accent: "green-cyan",
-    tag: "Open source · macOS",
-    role: "Author and maintainer",
-    status: "v3.06 · MIT",
+    accent: "blue-purple",
+    tag: "Minecraft server",
+    role: "Site and server plugins",
+    status: "Live · Paper 1.21.11",
     summary:
-      "A thermal governor for Apple Silicon Macs — fan curves, live temperatures, and a Meeting Mode that keeps the fans quiet on calls.",
+      "A public Minecraft survival server — four survival worlds on one server — with a live 3D site in front and nine custom plugins behind it.",
     problem:
-      "Apple Silicon Macs ramp their fans on a schedule you don't control, and the tools that fix it want either a kernel extension or a subscription.",
+      "Four survival worlds on one server need a single front door, and the economy, shops and duels the server runs on had to be written to fit it.",
     outcome:
-      "A user-space daemon with Silent, Balanced, Frost and Max profiles, a menu-bar widget graphing CPU and GPU temperature, and a one-line Homebrew install. No network calls — the state never leaves the machine.",
-    stack: ["IOKit (user space)", "Local daemon", "Homebrew tap", "Menu-bar app"],
-    glow: "255, 196, 92",
-    glowClass: "green-status-glow",
+      "A Next.js site over a live three.js world: a glass prism splitting light into an Overworld village, a Nether fortress and the End, with a server-status widget. On the server, nine Paper plugins — a 100-tier generator shop, wealth ranks, server and player shops, five resettable duel arenas, and world picking with chat shared across worlds.",
+    stack: ["Next.js", "React Three Fiber", "Tailwind CSS", "Paper plugins (Java)"],
+    glow: "235, 78, 46",
+    glowClass: "purple-glow",
     blurb:
-      "Fan curves and live temperatures for Apple Silicon, entirely in user space.",
-    shot: "/screenshots/shot-gcoolers.jpg",
+      "One Minecraft server, four survival worlds — a live 3D site and nine plugins.",
+    shot: "/showcase/previews/prism-smp.jpg",
     shotAlt:
-      "Gcoolers homepage — the wordmark above a live terminal panel graphing CPU and GPU temperature history",
+      "Prism SMP homepage — the pixel-type title over a wall of enchanting-table glyphs, a glass prism splitting light, and a live server-status card",
+    loop: "/showcase/previews/prism-smp.mp4",
   },
   {
     id: "leland-plays-piano",
@@ -83,33 +91,61 @@ export const projects: Project[] = [
     glowClass: "corvus-glow",
     blurb:
       "Press kit, catalogue and booking paths for a working pianist, in one place.",
-    shot: "/screenshots/shot-leland.jpg",
+    shot: "/showcase/previews/leland-plays-piano.jpg",
     shotAlt:
-      "Leland Plays Piano homepage with a large serif headline and the most recent performance video",
+      "Leland Plays Piano homepage — a large serif headline beside the most recent performance, a Zelda piano medley video",
+    loop: "/showcase/previews/leland-plays-piano.mp4",
   },
   {
-    id: "fuji-afterglow",
-    title: "Fuji Afterglow",
-    url: "https://lofi-afterglow.cc/",
-    host: "lofi-afterglow.cc",
+    id: "ricochet-tanks",
+    title: "Ricochet Tanks",
+    url: "https://crispergames.com/",
+    host: "crispergames.com",
     module: "03",
-    accent: "blue-purple",
-    tag: "Listening room",
-    role: "Concept and build",
-    status: "Live",
+    accent: "green-cyan",
+    tag: "Game · Discord Activity",
+    role: "Game, site and backend",
+    status: "v1.6.2 · Live",
     summary:
-      "An endless evening you join rather than start — everyone who opens it lands on the same moment of the same track.",
+      "A top-down 3D tank battler that runs inside Discord — bank shots, mines, and 500 missions across 10 worlds.",
     problem:
-      "On-demand ambient music is private and a little lonely. The version worth building is the one where the clock is shared.",
+      "A game that lives inside a Discord call has to start fast, be worth coming back to, and keep a leaderboard people can trust.",
     outcome:
-      "A synchronized stream: one continuous track over an illustrated Japanese townscape, with a shared clock so every listener hears the same bar at the same time.",
-    stack: ["Web Audio", "Shared playback clock", "Illustrated scene"],
-    glow: "235, 78, 46",
-    glowClass: "purple-glow",
+      "One three.js game served as a Discord Activity, in the browser, and in an iPhone app, with co-op, an Endless mode, a Hangar for designing your own tank, and a leaderboard whose runs are checked by the server.",
+    stack: ["three.js", "TypeScript + Vite", "Discord Embedded App SDK", "Cloudflare Pages · D1 · Durable Objects", "Capacitor (iOS)"],
+    glow: "255, 196, 92",
+    glowClass: "green-status-glow",
     blurb:
-      "One endless track on a shared clock — everyone hears the same bar.",
-    shot: "/screenshots/shot-afterglow.jpg",
+      "A 3D tank battler inside Discord — bank shots, mines, 500 missions.",
+    shot: "/showcase/previews/ricochet-tanks.jpg",
     shotAlt:
-      "Fuji Afterglow homepage — an illustrated rainy window looking out at Mount Fuji, with a Join live button",
+      "Ricochet Tanks homepage — the chrome RICOCHET TANKS logo over a dim top-down battlefield, with Add to Discord and Play now buttons",
+    loop: "/showcase/previews/ricochet-tanks.mp4",
+  },
+  {
+    id: "gcoolers",
+    title: "Gcoolers",
+    url: "https://gcoolers.com/",
+    host: "gcoolers.com",
+    module: "04",
+    accent: "green-cyan",
+    tag: "Open source · macOS",
+    role: "Author and maintainer",
+    status: "v3.06 · MIT",
+    summary:
+      "A thermal governor for Apple Silicon Macs — fan curves, live temperatures, and a Meeting Mode that keeps the fans quiet on calls.",
+    problem:
+      "Apple Silicon Macs ramp their fans on a schedule you don't control, and the tools that fix it want either a kernel extension or a subscription.",
+    outcome:
+      "A user-space daemon with Silent, Balanced, Frost and Max profiles, a menu-bar widget graphing CPU and GPU temperature, and a one-line Homebrew install. No network calls — the state never leaves the machine.",
+    stack: ["IOKit (user space)", "Local daemon", "Homebrew tap", "Menu-bar app"],
+    glow: "255, 196, 92",
+    glowClass: "green-status-glow",
+    blurb:
+      "Fan curves and live temperatures for Apple Silicon, entirely in user space.",
+    shot: "/showcase/previews/gcoolers.jpg",
+    shotAlt:
+      "Gcoolers homepage — the wordmark above a live terminal panel graphing CPU and GPU temperature history",
+    loop: "/showcase/previews/gcoolers.mp4",
   },
 ];

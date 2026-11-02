@@ -1,37 +1,24 @@
-import { useRef } from "react";
 import Navbar from "./components/Navbar";
-import HeroMachine from "./components/HeroMachine";
-import ScrollMachine from "./components/ScrollMachine";
-import GitHubProfile from "./components/GitHubProfile";
-import StackSection from "./components/StackSection";
-import VisualIndex from "./components/VisualIndex";
-import SiteFooter from "./components/SiteFooter";
-import ConstellationField from "./components/ConstellationField";
+import EngravedIntro from "./components/EngravedIntro";
+import Showcase from "./showcase/Showcase";
 
 /**
- * Order changed 11 Sep 2026: GitHub now comes BEFORE the site previews.
+ * Branch intro-engraved: the new portfolio.
  *
- * The code leads. GitHub, then the stack groups lifted from his profile README,
- * then the three websites as supporting evidence — which is why those tiles are
- * small now, a gallery strip rather than the main event.
+ * An engraved scroll intro (src/intro), then the showcase (src/showcase): the same
+ * content the original site carries (hero line, the three projects, GitHub, stack,
+ * footer) drawn as comic pages in the intro's palette. The original sections
+ * (HeroMachine, ScrollMachine, GitHubProfile, StackSection, VisualIndex, SiteFooter,
+ * ConstellationField) are untouched in src/components and still render on main.
  */
 export default function App() {
-  const progressRef = useRef(0);
-
   return (
-    <div className="relative min-h-screen bg-bg text-text-primary font-body overflow-x-hidden">
-      <ConstellationField progressRef={progressRef} />
-
+    <div className="relative min-h-screen bg-bg text-text-primary font-body overflow-x-clip">
       <Navbar />
       <main className="relative z-10">
-        <HeroMachine isReady />
-        {/* desktop-only cinematic sequence; returns null on phones */}
-        <ScrollMachine progressRef={progressRef} />
-        <GitHubProfile />
-        <StackSection />
-        <VisualIndex />
+        <EngravedIntro />
+        <Showcase />
       </main>
-      <SiteFooter />
     </div>
   );
 }

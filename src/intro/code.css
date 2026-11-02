@@ -1,0 +1,129 @@
+/* Code beat (scenes/code.js): "The code, in public." over the engraved city.
+   Everything here is a paper plate with an ink rule and an offset ink shadow, like a
+   map annotation (the same plate as the intro caption). Each element is scrubbed by
+   --v 0..1 from JS, so it rewinds with the scroll. */
+.cb { position: absolute; inset: 0; display: none; pointer-events: none; color: #080605; }
+.cb.is-active { display: block; }
+.cb a { pointer-events: auto; }
+.cb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.cb-plate {
+  background: #F1E9DE; color: #080605;
+  border: 1.5px solid #080605; box-shadow: 4px 4px 0 #080605;
+}
+.cb-kicker { margin: 0; font: 500 11px/1 'JetBrains Mono', monospace; letter-spacing: .22em; text-transform: uppercase; color: #E4692C; }
+
+/* ---- header ---- */
+.cb-head {
+  --v: 0; position: absolute; left: clamp(20px, 5vw, 72px); top: 112px; visibility: hidden;
+  padding: 18px 26px 22px; max-width: calc(100vw - 40px);
+  opacity: var(--v); transform: translate3d(0, calc((1 - var(--v)) * 18px), 0);
+  clip-path: inset(0 calc((1 - var(--v)) * 100%) -8px 0);
+}
+.cb-title { margin: 12px 0 0; font: 400 clamp(48px, 6.6vw, 104px)/.9 'Instrument Serif', serif; letter-spacing: -.018em; white-space: nowrap; }
+
+/* ---- repo labels, pinned to the signboards ---- */
+.cb-repos { list-style: none; margin: 0; padding: 0; }
+.cb-repo { --v: 0; position: absolute; inset: 0; visibility: hidden; }
+.cb-box {
+  position: absolute; left: 0; top: 0; width: 340px; padding: 16px 20px 16px;
+  opacity: min(1, calc(var(--v) * 1.4)); scale: calc(.9 + .1 * var(--v)); transform-origin: 0 50%;
+  will-change: transform;
+}
+.cb-lead {
+  position: absolute; left: 0; top: -1px; height: 2px; width: 1px; transform-origin: 0 50%;
+  background: #F1E9DE; box-shadow: 0 0 0 1px #080605;
+  clip-path: inset(-2px calc((1 - var(--v)) * 100%) -2px 0);
+}
+.cb-pin {
+  position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%;
+  background: #FFB15E; border: 2px solid #080605; box-sizing: border-box;
+  scale: var(--v);
+}
+.cb-repo-k { margin: 0; font: 500 10.5px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase; color: #6E625C; }
+.cb-repo-k span { color: #E4692C; }
+.cb-repo-name {
+  display: inline-block; margin-top: 10px; font: 400 34px/1 'Instrument Serif', serif; letter-spacing: -.01em;
+  color: #080605; text-decoration: none; border-bottom: 1.5px solid rgba(8, 6, 5, .25);
+}
+.cb-repo-name span { font-size: .7em; color: #E4692C; }
+.cb-repo-name:hover { border-color: #E4692C; }
+.cb-repo-desc { margin: 10px 0 0; font: 400 15px/1.45 Inter, system-ui, sans-serif; color: #2A211D; }
+.cb-repo-topics { margin: 10px 0 0; font: 400 11.5px/1.6 'JetBrains Mono', monospace; color: #5E2312; }
+
+/* ---- profile card ---- */
+.cb-card {
+  --v: 0; position: absolute; left: clamp(20px, 5vw, 72px); top: 50%; width: min(380px, 30vw); visibility: hidden;
+  padding: 22px 24px 22px;
+  opacity: var(--v); transform: translate3d(calc((1 - var(--v)) * -36px), -50%, 0);
+}
+.cb-card > * { opacity: min(1, calc(var(--v) * 1.7 - var(--i, 0) * .14)); }
+.cb-card > :nth-child(2) { --i: 1; } .cb-card > :nth-child(3) { --i: 2; } .cb-card > :nth-child(4) { --i: 3; }
+.cb-card-top { display: flex; align-items: center; gap: 16px; }
+.cb-avatar { flex: none; display: block; width: 76px; height: 76px; border: 1.5px solid #080605; background: #080605; overflow: hidden; }
+.cb-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+.cb-handle { display: inline-block; margin-top: 8px; font: 400 34px/1 'Instrument Serif', serif; color: #080605; text-decoration: none; }
+.cb-handle:hover { color: #A9461A; }
+.cb-tagline { margin: 16px 0 0; font: 400 20px/1.22 'Instrument Serif', serif; color: #2A211D; }
+.cb-meta { display: flex; gap: 28px; margin: 16px 0 0; padding: 12px 0 0; border-top: 1px solid rgba(8, 6, 5, .2); }
+.cb-meta dt { font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: .2em; text-transform: uppercase; color: #6E625C; }
+.cb-meta dd { margin: 6px 0 0; font: 500 13px/1.2 'JetBrains Mono', monospace; }
+.cb-meta a { color: #080605; text-decoration: none; border-bottom: 1px solid rgba(8, 6, 5, .35); }
+.cb-meta a:hover { border-color: #E4692C; }
+.cb-cta {
+  display: inline-flex; gap: 6px; margin-top: 18px; padding: 10px 14px; background: #080605; color: #F1E9DE;
+  font: 500 12px/1 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+  box-shadow: 3px 3px 0 #E4692C; transition: transform .15s, box-shadow .15s;
+}
+.cb-cta span { color: #FFB15E; }
+.cb-cta:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #E4692C; }
+
+/* ---- the map legend ---- */
+.cb-legend {
+  --v: 0; position: absolute; right: clamp(56px, 6vw, 96px); top: 50%; width: min(300px, 26vw); visibility: hidden;
+  padding: 16px 18px 14px;
+  opacity: var(--v); transform: translate3d(calc((1 - var(--v)) * 36px), -50%, 0);
+}
+.cb-legend-k { margin: 0; font: 600 10px/1 'JetBrains Mono', monospace; letter-spacing: .3em; text-transform: uppercase; color: #E4692C; }
+.cb-legend-t { margin: 8px 0 0; font: 400 24px/1 'Instrument Serif', serif; }
+.cb-legend-sub { margin: 6px 0 0; padding-bottom: 10px; border-bottom: 1.5px solid #080605; font: 400 10.5px/1.4 'JetBrains Mono', monospace; color: #6E625C; }
+.cb-legend-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.cb-legend-list li {
+  display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 10px; padding: 4px 0;
+  font: 400 12.5px/1.2 'JetBrains Mono', monospace; border-bottom: 1px dotted rgba(8, 6, 5, .28);
+  opacity: min(1, calc(var(--v) * 1.8 - var(--i) * .1));
+}
+.cb-legend-list i { width: 18px; height: 14px; border: 1.2px solid #080605; background-color: #F1E9DE; }
+.cb-legend-list li:first-child i { background-color: #D8CDBF; }
+.cb-legend-list .v { color: #5E2312; }
+.cb-legend-tail { margin: 8px 0 0; font: 400 10.5px/1.5 'JetBrains Mono', monospace; color: #6E625C; }
+
+/* focus */
+.cb a:focus-visible { outline: 2px solid #E4692C; outline-offset: 3px; }
+
+/* ---- phones: one thing at a time, labels and card at the bottom, legend at the top ---- */
+.cb.is-phone .cb-head { left: 16px; right: 16px; top: 76px; padding: 14px 16px 16px; }
+.cb.is-phone .cb-title { font-size: clamp(36px, 10.5vw, 46px); white-space: normal; }
+.cb.is-phone .cb-box { width: calc(100vw - 32px); padding: 14px 16px; transform-origin: 50% 100%; }
+.cb.is-phone .cb-repo-name { font-size: 30px; }
+.cb.is-phone .cb-repo-desc { font-size: 14px; }
+.cb.is-phone .cb-card {
+  left: 16px; right: 16px; top: auto; bottom: 66px; width: auto; padding: 16px 16px 16px;
+  transform: translate3d(0, calc((1 - var(--v)) * 28px), 0);
+}
+.cb.is-phone .cb-avatar { width: 56px; height: 56px; }
+.cb.is-phone .cb-handle { font-size: 28px; margin-top: 6px; }
+.cb.is-phone .cb-tagline { font-size: 17px; margin-top: 12px; }
+.cb.is-phone .cb-meta { margin-top: 12px; padding-top: 10px; }
+.cb.is-phone .cb-cta { margin-top: 12px; }
+.cb.is-phone .cb-legend {
+  left: 16px; right: 16px; top: 80px; width: auto; padding: 12px 14px 10px;
+  transform: translate3d(0, calc((1 - var(--v)) * -20px), 0);
+}
+.cb.is-phone .cb-legend-t { font-size: 20px; display: inline; margin-left: 10px; }
+.cb.is-phone .cb-legend-k { display: inline; }
+.cb.is-phone .cb-legend-sub { margin-top: 6px; padding-bottom: 8px; }
+.cb.is-phone .cb-legend-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; margin-top: 4px; }
+.cb.is-phone .cb-legend-list li { padding: 3px 0; font-size: 11.5px; gap: 8px; grid-template-columns: 16px 1fr auto; }
+.cb.is-phone .cb-legend-list i { width: 16px; height: 12px; }
+.cb.is-phone .cb-legend-tail { display: none; }

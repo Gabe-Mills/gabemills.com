@@ -1,0 +1,96 @@
+/* Cover beat (scenes/cover.js): the name over the engraved heat field. Everything is
+   scrubbed by p through two custom properties per element, set from JS:
+   --in 0..1 (arrived) and --out 0..1 (lifted away). Never clipped, only moved and faded. */
+.cvb {
+  position: absolute; inset: 0; display: none; place-items: center;
+  padding: 76px 16px 64px; pointer-events: none; visibility: hidden;
+  color: #F1E9DE; text-align: center;
+}
+.cvb.is-on { display: grid; }
+.cvb-inner { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+
+.cvb-step {
+  --in: 0; --out: 0;
+  opacity: calc(var(--in) * (1 - var(--out)));
+  transform: translate3d(0, calc((1 - var(--in)) * 18px - var(--out) * 28px), 0);
+  will-change: transform, opacity;
+}
+
+.cvb-mark { display: block; width: clamp(54px, 5.4vw, 72px); height: auto; }
+.cvb-mark.cvb-step { opacity: calc(var(--in) * (1 - var(--out)) * 0.94); }
+
+/* the name: paper with a fine engraved hatch, each letter arriving lit and cooling */
+.cvb-name {
+  margin: clamp(22px, 3.4vh, 36px) 0 0;
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: min(13.4vw, 24vh, 214px); line-height: .86; letter-spacing: -.012em;
+  white-space: nowrap; color: #F1E9DE;
+}
+.cvb-word { display: inline-block; }
+.cvb-l {
+  --in: 0; --out: 0; --dx: 0em;
+  display: inline-block;
+  /* opaque early, so a letter in flight reads as a lit glyph, not a ghost */
+  opacity: calc(min(1, var(--in) * 2.2) * (1 - var(--out)));
+  transform: translate3d(calc(var(--out) * var(--dx)), calc((1 - var(--in)) * .34em - var(--out) * .22em), 0);
+  will-change: transform, opacity;
+  color: color-mix(in srgb, #FFB15E calc((1 - var(--in)) * 100%), #F1E9DE);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .cvb-l {
+    background-color: color-mix(in srgb, #FFB15E calc((1 - var(--in)) * 100%), #F1E9DE);
+    background-image: repeating-linear-gradient(-32deg, transparent 0 3px, rgba(8, 6, 5, .22) 3px 4px);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.cvb-rule {
+  display: block; width: 40px; height: 1px; margin: clamp(22px, 3.4vh, 34px) 0 0;
+  background: #E4692C; box-shadow: 0 0 10px rgba(228, 105, 44, .6);
+}
+
+.cvb-line {
+  margin: clamp(18px, 2.8vh, 26px) 0 0;
+  font: 400 clamp(11.5px, 1vw, 13px)/1.7 'JetBrains Mono', monospace;
+  letter-spacing: .26em; text-transform: uppercase; color: rgba(241, 233, 222, .86);
+}
+.cvb-sep { color: #9C8D86; }
+.cvb-ph, .cvb-mc { white-space: nowrap; }
+
+.cvb-current {
+  margin: 10px 0 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline;
+  gap: 2px 10px; max-width: 640px;
+  font: 400 11.5px/1.7 'JetBrains Mono', monospace; letter-spacing: .04em; color: rgba(241, 233, 222, .7);
+}
+.cvb-current-k { letter-spacing: .22em; text-transform: uppercase; color: #9C8D86; }
+.cvb-mc {
+  pointer-events: auto; color: #FFB15E; text-decoration: underline;
+  text-decoration-color: rgba(255, 177, 94, .4); text-decoration-thickness: 1px; text-underline-offset: 4px;
+  transition: text-decoration-color .2s ease-out;
+}
+.cvb-mc:hover { text-decoration-color: #FFB15E; }
+
+.cvb-links { margin: clamp(26px, 4.4vh, 44px) 0 0; display: flex; gap: 32px; }
+.cvb-links a {
+  pointer-events: auto;
+  font: 500 12px/1 'JetBrains Mono', monospace; letter-spacing: .16em; text-transform: uppercase;
+  color: #F1E9DE; text-decoration: none; padding: 10px 0;
+  border-bottom: 1px solid rgba(241, 233, 222, .26);
+  transition: border-color .2s ease-out, color .2s ease-out;
+}
+.cvb-links a:hover { color: #FFB15E; border-color: #FFB15E; }
+.cvb a:focus-visible { outline: 1px solid #FFB15E; outline-offset: 6px; }
+
+/* phones: the name stacks, GABE over MILLS */
+@media (max-width: 640px) {
+  .cvb { padding: 68px 16px 72px; }
+  .cvb-name { font-size: min(31vw, 17vh); line-height: .84; }
+  .cvb-word { display: block; }
+  .cvb-gap { display: none; }
+  .cvb-line { letter-spacing: .18em; max-width: 300px; }
+  .cvb-current { font-size: 11px; max-width: 320px; }
+  .cvb-links { gap: 28px; }
+}
+
+
