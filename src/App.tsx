@@ -1,23 +1,34 @@
 import Navbar from "./components/Navbar";
-import EngravedIntro from "./components/EngravedIntro";
-import Showcase from "./showcase/Showcase";
+import BuildRoot from "./build/BuildRoot";
+import Hero from "./build/sections/Hero";
+import Work from "./build/sections/Work";
+import Numbers from "./build/sections/Numbers";
+import Reel from "./build/sections/Reel";
+import GitHub from "./build/sections/GitHub";
+import Stack from "./build/sections/Stack";
+import Contact from "./build/sections/Contact";
 
 /**
- * Branch intro-engraved: the new portfolio.
- *
- * An engraved scroll intro (src/intro), then the showcase (src/showcase): the same
- * content the original site carries (hero line, the three projects, GitHub, stack,
- * footer) drawn as comic pages in the intro's palette. The original sections
- * (HeroMachine, ScrollMachine, GitHubProfile, StackSection, VisualIndex, SiteFooter,
- * ConstellationField) are untouched in src/components and still render on main.
+ * Branch agent-build: the page builds itself as you scroll, assembled by a swarm of
+ * cursors named after the AI tools Gabe actually works with (src/build). Every element
+ * is driven by its own scroll position, so scrolling back up un-builds it.
+ * The engraved story lives on branch intro-engraved; the original site's sections are
+ * still in src/components.
  */
 export default function App() {
   return (
-    <div className="relative min-h-screen bg-bg text-text-primary font-body overflow-x-clip">
+    <div className="relative min-h-screen bg-[#050A07] text-text-primary font-body overflow-x-clip">
       <Navbar />
       <main className="relative z-10">
-        <EngravedIntro />
-        <Showcase />
+        <BuildRoot>
+          <Hero />
+          <Work />
+          <Numbers />
+          <Reel />
+          <GitHub />
+          <Stack />
+          <Contact />
+        </BuildRoot>
       </main>
     </div>
   );

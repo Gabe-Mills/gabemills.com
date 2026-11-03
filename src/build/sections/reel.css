@@ -1,0 +1,127 @@
+/* Reel, v3: the page's most dramatic moment. Darkness above and below; the track pins the
+   stage while a small dim screen in the dark grows to full-bleed (desktop) or full width at
+   16:9 (phone), comes up from dark to full, the headline halves part (one up and left, one down
+   and right) and a slow light sweeps across the metallic type. CSS view timeline; transform /
+   opacity / filter on the moving layers. The base styles ARE the finished shot, so without
+   scroll timelines, or with reduced motion, it is a plain, finished frame. Owner: work+reel agent. */
+.reel {
+  --fh: 100svh;                               /* the screen's finished height */
+  --s0: .24;                                  /* its starting scale */
+  --pad: max(20px, calc((100vw - 1240px) / 2)); /* halves end on the .bp-wrap column edges */
+  --gap: 18px;                                /* halves' distance from the small screen */
+  --a-y1: calc(104px - 50svh); --a-py1: 0%;   /* half A ends at the top (under the nav) */
+  --b-y1: calc(50svh - 48px); --b-py1: -100%; /* half B ends at the bottom */
+  position: relative;
+  padding-block: 30vh;
+  background: linear-gradient(to bottom, rgba(2, 5, 4, .86), #020504 20vh, #020504 calc(100% - 20vh), rgba(2, 5, 4, .86));
+}
+.reel-stage { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+
+/* the back light behind the small screen */
+.reel-glow {
+  position: absolute; left: 50%; top: 50%; width: 120vmin; height: 80vmin; margin: -40vmin 0 0 -60vmin;
+  background: radial-gradient(closest-side, rgba(61, 190, 128, .2), rgba(61, 190, 128, .06) 55%, transparent);
+  opacity: .5; pointer-events: none;
+}
+
+/* ---- the screen ---- */
+.reel-grow { position: absolute; left: 0; right: 0; top: calc(50% - var(--fh) / 2); height: var(--fh); transform-origin: 50% 50%; }
+.reel-media {
+  /* radius and hairline match the Work cards (16 / 12 phone, the same hairline) */
+  position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 16px; background: #020504;
+  box-shadow: 0 0 0 1px rgba(168, 240, 200, .08);
+}
+.reel-media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.reel-spill {
+  position: absolute; left: 8%; right: 8%; top: 100%; height: 34%; pointer-events: none;
+  background: radial-gradient(50% 70% at 50% 0%, rgba(61, 190, 128, .3), rgba(61, 190, 128, .08) 50%, transparent 76%);
+}
+/* top and bottom shade over the full-bleed picture, so the type reads */
+.reel-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(2, 5, 4, .88), rgba(2, 5, 4, .5) 22%, rgba(2, 5, 4, 0) 42%),
+    linear-gradient(to top, rgba(2, 5, 4, .9), rgba(2, 5, 4, .5) 22%, rgba(2, 5, 4, 0) 42%),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(2, 5, 4, .55));
+}
+
+/* ---- the headline: two halves anchored at the stage's vertical centre ---- */
+.reel-title { position: static; font-size: clamp(64px, 8vw, 136px); }
+.reel-half { position: absolute; top: 50%; z-index: 2; display: block; }
+.reel-half--a { left: var(--pad); transform: translate3d(0, var(--a-y1), 0) translate(0, var(--a-py1)) scale(1); transform-origin: 0 0; }
+.reel-half--b { right: var(--pad); transform: translate3d(0, var(--b-y1), 0) translate(0, var(--b-py1)) scale(1); transform-origin: 100% 100%; }
+.reel-line { display: block; white-space: nowrap; }
+/* the light sweep, per word (Words.tsx raises each word on its own layer, so the sweep lives on
+   the words too): a soft white band over the ink (A) and over the brushed metal (B). Each word's
+   band starts a little later than the one before, so the light travels along the line. */
+.reel-half--a .bp-wi, .reel .reel-half--b .bp-wi.bp-metal {
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.reel-half--a .bp-wi {
+  background-image:
+    linear-gradient(100deg, transparent 42%, rgba(255, 255, 255, .95) 50%, transparent 58%),
+    linear-gradient(var(--ink), var(--ink));
+  background-size: 300% 100%, 100% 100%;
+  background-position: 0% 0, 0 0;
+}
+.reel .reel-half--b .bp-wi.bp-metal {
+  background-image:
+    linear-gradient(100deg, transparent 42%, rgba(240, 255, 247, .95) 50%, transparent 58%),
+    var(--metal);
+  background-size: 300% 100%, 220% 100%;
+  background-position: 0% 0, -60% 0;
+  animation: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reel-track { height: 300vh; view-timeline: --reel block; }
+    .reel-stage { position: sticky; top: 0; }
+    .reel-grow, .reel-media video, .reel-glow, .reel-shade, .reel-half, .reel-half--a .bp-wi, .reel .reel-half--b .bp-wi.bp-metal {
+      animation-timing-function: linear; animation-fill-mode: both;
+      animation-timeline: --reel; animation-range: contain 0% contain 88%;
+    }
+    .reel-grow { animation-name: reel-grow; animation-timing-function: cubic-bezier(.55, 0, .35, 1); }
+    .reel-media video { animation-name: reel-develop; }
+    .reel-glow { animation-name: reel-glow; }
+    .reel-shade { animation-name: reel-shade; }
+    .reel-half--a { animation-name: reel-half-a; animation-timing-function: cubic-bezier(.55, 0, .35, 1); }
+    .reel-half--b { animation-name: reel-half-b; animation-timing-function: cubic-bezier(.55, 0, .35, 1); }
+    .reel-half--a .bp-wi { animation-name: reel-sweep-a; animation-range: contain calc(14% + var(--i, 0) * 6%) contain calc(88% + var(--i, 0) * 6%); }
+    .reel .reel-half--b .bp-wi.bp-metal { animation-name: reel-sweep-b; animation-range: contain calc(10% + var(--i, 0) * 6%) contain calc(84% + var(--i, 0) * 6%); }
+  }
+  @media (prefers-reduced-motion: no-preference) and (max-width: 767px) {
+    .reel-track { height: 230vh; }
+  }
+}
+@keyframes reel-grow { from { scale: var(--s0); } to { scale: 1; } }
+@keyframes reel-develop {
+  from { filter: brightness(.32) saturate(.2) contrast(1.15); }
+  to { filter: none; }
+}
+@keyframes reel-glow { from { opacity: .5; transform: scale(.7); } 45% { opacity: 1; } to { opacity: 0; transform: scale(1.4); } }
+@keyframes reel-shade { 0%, 35% { opacity: 0; } 80%, to { opacity: 1; } }
+@keyframes reel-half-a {
+  from { transform: translate3d(calc(50vw - var(--pad)), calc(var(--s0) * var(--fh) / -2 - var(--gap)), 0) translate(-50%, -100%) scale(.86); }
+}
+@keyframes reel-half-b {
+  from { transform: translate3d(calc(var(--pad) - 50vw), calc(var(--s0) * var(--fh) / 2 + var(--gap)), 0) translate(50%, 0) scale(.86); }
+}
+@keyframes reel-sweep-a { from { background-position: 100% 0, 0 0; } to { background-position: 0% 0, 0 0; } }
+@keyframes reel-sweep-b { from { background-position: 100% 0, 0% 0; } to { background-position: 0% 0, -60% 0; } }
+
+/* phone: keep the full 16:9 frame (a portrait crop cut the sites' own titles in half); the
+   halves end just above and below it, on black */
+@media (max-width: 767px) {
+  .reel {
+    --fh: 56.25vw; --s0: .42; --pad: 20px; --gap: 14px;
+    --a-y1: calc(var(--fh) / -2 - 20px); --a-py1: -100%;
+    --b-y1: calc(var(--fh) / 2 + 20px); --b-py1: 0%;
+    padding-block: 22vh;
+  }
+  .reel-title { font-size: clamp(52px, 15vw, 88px); }
+  .reel-media { border-radius: 12px; }
+  .reel-shade { display: none; }
+  .reel-half--a { transform-origin: 0 100%; }
+  .reel-half--b { transform-origin: 100% 0; }
+}

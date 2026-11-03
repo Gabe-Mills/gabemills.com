@@ -1,0 +1,107 @@
+/* The page that builds itself. Main colour: METALLIC GREEN (Gabe, 2 Nov 2026), washed over a
+   green-black ground. Tokens: ground #050A07, text #EEF5F0, dim #86958C, accent #3DBE80 (emerald),
+   lit #A8F0C8 (mint), deep #1E6B49, and --metal, a brushed emerald-to-mint gradient for accents.
+   Display: Anton (condensed caps). Body: Inter. Labels: JetBrains Mono. */
+@import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+
+.bp {
+  --ground: #050A07; --ink: #EEF5F0; --dim: #86958C; --line: rgba(238,245,240,0.1);
+  --accent: #3DBE80; --accent-lit: #A8F0C8; --accent-deep: #1E6B49;
+  /* seamless: horizontal, and it starts and ends on the same colour, so the repeating sheen
+     never shows a tile edge (the old 105deg gradient left a hard line inside words) */
+  --metal: linear-gradient(90deg, #2B9363 0%, #6FD9A4 16%, #DDFBEA 30%, #56CC91 44%, #2B9363 58%, #8EE4BA 76%, #2B9363 100%);
+  /* old names kept as aliases so every section turned green at once */
+  --ember: var(--accent); --glow: var(--accent-lit);
+  --display: "Anton", "Impact", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  position: relative; isolation: isolate;
+  background: var(--ground); color: var(--ink);
+}
+/* the green wash: fixed light pools + grain on their own layer (composited, no scroll repaint) */
+.bp::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(70vw 60vh at 12% -10%, rgba(61,190,128,0.16), transparent 70%),
+    radial-gradient(60vw 70vh at 100% 55%, rgba(61,190,128,0.10), transparent 70%),
+    radial-gradient(50vw 50vh at 30% 120%, rgba(168,240,200,0.07), transparent 70%);
+}
+.bp::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+/* the GM mark is ember artwork; on this branch it reads green */
+img[src*="logo-gm"] { filter: hue-rotate(118deg) saturate(.85) brightness(1.05); }
+.bp-wrap { width: min(1240px, calc(100vw - 40px)); margin: 0 auto; }
+.bp-section { position: relative; padding: clamp(96px, 16vh, 180px) 0; }
+.bp-kicker { font: 500 13px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.bp-kicker b { color: var(--ember); font-weight: 500; }
+.bp-display { font-family: var(--display); font-weight: 400; text-transform: uppercase; line-height: .9; letter-spacing: .005em; }
+.bp-display em, .bp-metal {
+  font-style: normal; color: var(--accent);
+  background: var(--metal); background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: bp-sheen 7s linear infinite;
+}
+@keyframes bp-sheen { from { background-position: 0% 0; } to { background-position: -220% 0; } }
+.bp-body { font: 400 16px/1.6 Inter, system-ui, sans-serif; color: rgba(243,238,232,.78); }
+.bp-link {
+  display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 22px;
+  font: 600 15px/1 Inter, system-ui, sans-serif; letter-spacing: .005em; text-decoration: none;
+  color: #04130B; background: var(--metal); background-size: 180% 100%; border-radius: 4px; transition: background .2s, transform .2s;
+}
+.bp-link:hover { background-position: 60% 0; transform: translateY(-1px); }
+.bp-link--ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.bp-link--ghost:hover { background: rgba(243,238,232,.06); }
+.bp a:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
+
+/* ---- build states. The engine writes per element: --e (overall 0..1) and --m (the
+   kind's own motion: typing for text, carry-in for box, fill for media). Boxes also get
+   a fixed start offset --dx/--dy/--dr: the crew drags them in from there. ---- */
+[data-build] { --e: 0; --m: 0; }
+[data-build="text"] { width: fit-content; max-width: 100%; clip-path: inset(-0.15em calc((1 - var(--m)) * 100%) -0.15em -0.05em); }
+[data-build="media"] { opacity: var(--m); }
+[data-build="box"] {
+  opacity: clamp(0, calc(var(--e) * 8 - 0.6), 1);
+  transform:
+    translate3d(calc((1 - var(--m)) * var(--dx, 0px)), calc((1 - var(--m)) * var(--dy, 0px)), 0)
+    rotate(calc((1 - var(--m)) * var(--dr, 0deg)));
+  filter: brightness(calc(0.82 + var(--m) * 0.18));
+}
+[data-build="fade"] { opacity: var(--e); transform: translateY(calc((1 - var(--e)) * 14px)); }
+
+/* ---- kinetic words (Words.tsx): each word rises out of its own masked line as the crew
+   types. --m comes from the engine on the parent; --n words, --i this word's index. ---- */
+.bp-words[data-build="text"] { clip-path: none; width: auto; }
+.bp-line { display: block; }
+.bp-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.bp-w { display: inline-block; overflow: hidden; vertical-align: bottom; padding: .1em .06em .04em; margin: -.1em -.06em -.04em; white-space: pre; }
+.bp-wi {
+  --p: clamp(0, calc((var(--m, 1) * var(--n, 1) - var(--i, 0)) * 1.15), 1);
+  display: inline-block; transform-origin: 0 100%;
+  transform: translate3d(0, calc((1 - var(--p)) * 112%), 0) rotate(calc((1 - var(--p)) * 7deg));
+  opacity: clamp(0, calc(var(--p) * 1.6), 1);
+}
+/* accent runs share one continuous gradient (Words.tsx measures --gw/--gx), and the sheen
+   moves across the whole run in sync instead of restarting at every word */
+.bp-wi.bp-metal {
+  background-size: calc(var(--gw, 400px) * 2.2) 100%;
+  background-position: calc(var(--gx, 0px) * -1) 0;
+  animation-name: bp-sheen-run;
+}
+@keyframes bp-sheen-run {
+  from { background-position: calc(var(--gx, 0px) * -1) 0; }
+  to { background-position: calc(var(--gx, 0px) * -1 - var(--gw, 400px) * 2.2) 0; }
+}
+@media (prefers-reduced-motion: reduce) { .bp-wi { transform: none !important; opacity: 1 !important; } }
+
+/* sections off screen pause their looping animations (BuildRoot toggles data-off) */
+[data-off] *, [data-off] *::before, [data-off] *::after { animation-play-state: paused !important; }
+
+/* the overlay that draws rulers, selections and the cursor swarm */
+.bp-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 40; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-display em, .bp-metal { animation: none; }
+  [data-build] { clip-path: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+  .bp-overlay { display: none; }
+}

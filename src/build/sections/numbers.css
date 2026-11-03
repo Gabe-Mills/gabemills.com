@@ -1,0 +1,169 @@
+/* Numbers v4: one cinematic shot on one left edge. Out of the black a single green key light
+   comes up and the giant metallic 90+ rises under it while a slow light sweep crosses its metal;
+   the other three stats are dropped beside it. All four numerals stand on ONE baseline and all
+   four labels sit on ONE line below (a subgrid; numerals trimmed to cap height and baseline).
+   Behind it the worked-with names drift past as a huge, dim band (the depth layer). */
+
+.nm {
+  --W: min(1240px, calc(100vw - 40px)); /* the .bp-wrap width */
+  --gap: 32px;
+  overflow-x: clip;
+  padding-block: 160px;
+  /* deep black at the edges: the section emerges from black and returns to it */
+  background:
+    linear-gradient(180deg, #020504 0%, rgba(2,5,4,0) 20%, rgba(2,5,4,0) 80%, #020504 100%),
+    radial-gradient(85% 70% at 30% 58%, rgba(2,5,4,.3), rgba(2,5,4,.9) 72%, #020504 100%);
+}
+.nm-wrap { position: relative; }
+.nm .bp-kicker { font-size: 13px; letter-spacing: .14em; }
+
+.nm-title { margin-top: 24px; font-size: clamp(64px, 9vw, 148px); }
+
+/* the roll-up: a CSS counter driven by the engine's --e, no per-frame JS */
+@property --nm-t { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --nm-n { syntax: "<integer>"; inherits: false; initial-value: 0; }
+
+.nm-count-num { position: relative; }
+.nm-count-ghost { visibility: hidden; }
+.nm-count-roll {
+  position: absolute; inset: 0; display: flex; justify-content: flex-end; /* overflow grows left */
+  --nm-t: clamp(0, calc((var(--e, 1) - 0.12) / 0.66), 1);
+  --nm-n: calc(var(--nm-t) * (2 - var(--nm-t)) * var(--to, 0));
+  counter-reset: nm var(--nm-n);
+}
+/* line-height normal: the overlay's line box matches the ghost's content area, so the
+   rolling figure sits exactly on the ghost's baseline */
+.nm-count-roll::after { content: counter(nm); line-height: normal; }
+/* the suffix rides at cap height beside the figure */
+.nm-count-suffix { font-size: .44em; vertical-align: 1.25em; margin-left: .04em; }
+
+/* ---- the stage ---- */
+.nm-stage {
+  --bf: clamp(120px, 14vw, 216px); /* the band's type size */
+  --c1: calc((var(--W) - 3 * var(--gap)) * 1.9 / 4.9); /* column 1: the hero figure */
+  position: relative; margin-top: 72px;
+}
+
+/* the key light: a soft cone from above the hero figure (a conic gradient, no blur) */
+.nm-light {
+  position: absolute; z-index: 0; left: calc(var(--c1) / 2); top: -90%; width: min(1240px, 150vw); height: 200%;
+  transform: translateX(-50%); pointer-events: none;
+}
+.nm-cone {
+  position: absolute; inset: 0; transform-origin: 50% 0;
+  background:
+    conic-gradient(from 0deg at 50% 0%, transparent 0deg 156deg, rgba(168,240,200,.13) 170deg,
+      rgba(200,250,222,.22) 180deg, rgba(168,240,200,.13) 190deg, transparent 204deg 360deg);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 56%, transparent 94%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 56%, transparent 94%);
+}
+/* where the light lands: a pool on the floor under the figure */
+.nm-pool {
+  position: absolute; left: 26%; right: 26%; bottom: 8%; height: 22%;
+  background: radial-gradient(closest-side, rgba(61,190,128,.16), rgba(61,190,128,.05) 55%, transparent);
+}
+
+/* ---- depth layer: the worked-with band, full bleed ---- */
+.nm-band {
+  position: absolute; z-index: 0; top: calc(46% - var(--bf) * .7);
+  left: calc(50% - 50vw); width: 100vw; pointer-events: none;
+}
+/* its label sits on the stats column's left edge, above the three small figures */
+.nm-band-label {
+  padding-left: calc((100vw - var(--W)) / 2 + var(--c1) + var(--gap)); margin-bottom: 8px;
+  font: 500 14px/1.4 Inter, system-ui, sans-serif; color: rgba(134,149,140,.72);
+}
+.nm-band-depth {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+.nm-belt { display: flex; width: max-content; animation: nm-belt 240s linear infinite; }
+.nm-track { display: flex; flex: none; list-style: none; margin: 0; padding: 0; }
+.nm-track li {
+  padding-right: .42em; white-space: nowrap;
+  font-family: var(--display); font-size: var(--bf); line-height: 1; text-transform: uppercase;
+  color: rgba(168,240,200,.055);
+}
+@keyframes nm-belt { to { transform: translateX(-50%); } }
+
+/* ---- the baseline grid: row 1 numerals (bottoms = baselines), row 2 labels ---- */
+.nm-grid {
+  position: relative; z-index: 1; list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: var(--c1) repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto auto; column-gap: var(--gap); row-gap: 24px;
+}
+.nm-cell { grid-row: span 2; display: grid; grid-template-rows: subgrid; min-width: 0; }
+.nm-num {
+  align-self: end; font-family: var(--display); line-height: 1; white-space: nowrap;
+  /* the line box is cut to cap height and the alphabetic baseline, so every figure's
+     bottom edge IS its baseline and the grid lines them up exactly */
+  text-box: trim-both cap alphabetic;
+}
+.nm-label { align-self: start; font: 500 16px/1.4 Inter, system-ui, sans-serif; color: var(--dim); }
+
+/* the giant figure */
+.nm-hero .nm-num {
+  font-size: clamp(200px, 23vw, 340px); letter-spacing: -.01em; transform-origin: 0 100%;
+  margin-left: -.025em; /* optical: the 9's side bearing, so its stem meets the left edge */
+  /* out of darkness: brightness comes up as the crew lifts it in */
+  filter: brightness(calc(.12 + var(--m, 1) * .88));
+}
+.nm-hero .nm-label { color: var(--ink); }
+/* metal lit from above, with a slow specular sweep crossing it now and then */
+.nm-hero .nm-count-roll::after,
+.nm-hero .nm-count-suffix {
+  color: var(--accent);
+  background:
+    linear-gradient(102deg, transparent 43%, rgba(255,255,255,.8) 50%, transparent 57%),
+    linear-gradient(180deg, #F2FFF8 0%, #B4F3D0 14%, #57CF93 38%, #23784F 68%, #0B2B1D 100%);
+  background-size: 300% 100%, 100% 100%; background-repeat: no-repeat;
+  background-position: 100% 0, 0 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: nm-sweep 11s cubic-bezier(.45, 0, .25, 1) infinite;
+}
+@keyframes nm-sweep {
+  0%, 38% { background-position: 100% 0, 0 0; }
+  72%, 100% { background-position: 0% 0, 0 0; }
+}
+
+/* the other three: quiet figures dropped in beside it */
+.nm-stat .nm-num { font-size: clamp(56px, 6vw, 88px); color: rgba(238,245,240,.7); }
+.nm-stat .nm-count-suffix { color: var(--accent-lit); }
+
+.nm-counted { margin-top: 40px; font: 400 14px/1.5 Inter, system-ui, sans-serif; color: rgba(134,149,140,.8); }
+
+/* ---- the camera: light comes up as the shot arrives and dies as it leaves; the figure
+   pushes in; the band drifts on its own depth. Scroll-driven, compositor only. ---- */
+@supports (animation-timeline: view()) {
+  .nm-light { animation: nm-expose linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+  .nm-cone { animation: nm-sway linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+  .nm-hero .nm-num { animation: nm-push linear both; animation-timeline: view(); animation-range: entry 0% cover 55%; }
+  .nm-band-depth { animation: nm-drift linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+}
+@keyframes nm-expose { 0% { opacity: 0; } 32%, 68% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes nm-sway { from { transform: rotate(-5deg); } to { transform: rotate(4deg); } }
+@keyframes nm-push { from { transform: scale(1.07); } to { transform: none; } }
+@keyframes nm-drift { from { transform: translate3d(0, 64px, 0); } to { transform: translate3d(0, -64px, 0); } }
+
+/* ---- phones: the figure on its own row, the three below on one shared baseline ---- */
+@media (max-width: 860px) {
+  .nm { --gap: 20px; padding-block: 96px; }
+  .nm-stage { --bf: 30vw; margin-top: 40px; }
+  .nm-light { left: 30%; }
+  .nm-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto auto auto; row-gap: 16px; }
+  .nm-hero { grid-column: 1 / -1; grid-row: 1 / span 2; margin-bottom: 24px; }
+  .nm-stat { grid-row: 3 / span 2; }
+  .nm-hero .nm-num { font-size: min(54vw, 280px); }
+  .nm-stat .nm-num { font-size: min(12vw, 56px); }
+  .nm-label { font-size: 14px; }
+  .nm-band-label { display: none; }
+  .nm-counted { margin-top: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nm-hero .nm-count-roll::after, .nm-hero .nm-count-suffix { animation: none; }
+  .nm-belt { animation: none; }
+  .nm-light, .nm-cone, .nm-hero .nm-num, .nm-band-depth { animation: none !important; }
+  .nm-hero .nm-num { filter: none; }
+}

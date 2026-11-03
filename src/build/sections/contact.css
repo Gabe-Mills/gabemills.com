@@ -1,0 +1,170 @@
+/* Contact (#contact), the last shot. It comes up out of black, ends in one shaft of green light
+   onto the stage where the 3D GM monogram (GM3D) rises out of the dark, and goes back to black.
+   v4 layout: ONE left edge (the .bp-wrap column) for every line; the monogram stage sits right
+   of the closing statement on desktop, above it on a phone. Rhythm on the 8px scale: section
+   160 / 96, headline -> rows 72 / 40, rows -> finale 160 / 96, finale -> footer 128 / 96.
+   Big Anton lines are pulled left by their side bearing so the ink sits on the column edge.
+   Colour only from the build.css tokens. Motion: transform / opacity only; the light and the
+   push-ins run on CSS view timelines, the idle arrow launch pauses off screen (data-off). */
+.contact {
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --black: #020504;
+  --go: 56px;
+  padding: 160px 0 40px;
+  background: linear-gradient(180deg, transparent, var(--black) 16%, var(--black));
+  overflow: clip;
+}
+.contact__title { margin: 0; font-size: clamp(64px, 9vw, 148px); line-height: .9; }
+/* optical alignment: L .038em, S .021em (child 1 is Words' screen-reader copy) */
+.contact__title .bp-line:nth-child(2) { margin-left: -.038em; }
+.contact__title .bp-line:nth-child(3) { margin-left: -.021em; }
+
+/* ---- the ways in: two big rows ---- */
+.contact__ways { margin-top: 72px; display: flex; flex-direction: column; }
+.contact__row {
+  position: relative;
+  display: grid; grid-template-columns: auto 1fr var(--go); align-items: center; column-gap: 32px;
+  padding: 32px 0;
+  color: var(--ink); text-decoration: none;
+}
+/* hairlines that draw across as the row lands */
+.contact__row::before, .contact__row:last-child::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 1px; background: var(--line);
+  transform-origin: left; transform: scaleX(var(--e));
+}
+.contact__row::before { top: 0; }
+.contact__row:last-child::after { bottom: 0; }
+.contact__label { display: block; font-size: clamp(48px, 5.6vw, 80px); line-height: .9; transition: transform .45s var(--ease); }
+.contact__row:nth-child(1) .contact__label { margin-left: -.031em; } /* G */
+.contact__row:nth-child(2) .contact__label { margin-left: -.038em; } /* L */
+.contact__handle {
+  justify-self: end;
+  display: inline-flex; align-items: center; gap: 10px;
+  font: 500 15px/24px Inter, system-ui, sans-serif; color: var(--dim); transition: color .3s;
+}
+.contact__icon { width: 20px; height: 20px; flex: none; }
+
+/* the arrow: a ring that spins into orientation as the row is dropped, then launches */
+.contact__go {
+  position: relative; width: var(--go); height: var(--go);
+  border-radius: 50%; overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(238, 245, 240, .18);
+  color: var(--ink);
+  transform: rotate(calc((1 - var(--e)) * -135deg));
+  transition: color .3s, box-shadow .3s;
+}
+.contact__go::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--metal); background-size: 180% 100%;
+  transform: scale(0); transition: transform .45s var(--ease);
+}
+.contact__fly {
+  position: absolute; inset: 0;
+  animation: contact-idle 6s cubic-bezier(.6, 0, .2, 1) 1s infinite;
+}
+.contact__row + .contact__row .contact__fly { animation-delay: 4s; }
+.contact__fly svg { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; }
+.contact__fly svg + svg { transform: translate(calc(var(--go) * -1), var(--go)); }
+/* idle: every few seconds the arrow flies out to the top right and a fresh one slides in.
+   The end frame looks exactly like the start, so the loop is seamless. */
+@keyframes contact-idle {
+  0%, 82% { transform: none; }
+  96%, 100% { transform: translate(var(--go), calc(var(--go) * -1)); }
+}
+@keyframes contact-launch {
+  from { transform: none; }
+  to { transform: translate(var(--go), calc(var(--go) * -1)); }
+}
+.contact__row:hover .contact__go, .contact__row:focus-visible .contact__go { color: #04130B; box-shadow: inset 0 0 0 1px transparent; }
+.contact__row:hover .contact__go::before, .contact__row:focus-visible .contact__go::before { transform: scale(1); }
+.contact__row:hover .contact__fly, .contact__row:focus-visible .contact__fly { animation: contact-launch .55s var(--ease) both; }
+.contact__row:hover .contact__label, .contact__row:focus-visible .contact__label { transform: translateX(16px); }
+.contact__row:hover .contact__handle, .contact__row:focus-visible .contact__handle { color: var(--accent-lit); }
+
+/* ---- the final shot: the statement on the column, the lit stage beside it ---- */
+.contact__finale {
+  position: relative; isolation: isolate; margin: 160px 0 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 64px;
+}
+.contact__quote { margin: 0; font-size: clamp(56px, 7vw, 112px); line-height: .92; }
+/* optical alignment: M .038em, T .010em, F .038em */
+.contact__quote .bp-line:nth-child(2), .contact__quote .bp-line:nth-child(4) { margin-left: -.038em; }
+.contact__quote .bp-line:nth-child(3) { margin-left: -.01em; }
+
+.contact__shot { position: relative; }
+/* one key light: a shaft from above onto a pool centred on the monogram */
+.contact__light {
+  position: absolute; left: 50%; top: calc(50% - 380px); z-index: -1;
+  width: 900px; height: 760px; margin-left: -450px;
+  pointer-events: none;
+}
+.contact__shaft, .contact__pool { position: absolute; display: block; }
+.contact__shaft {
+  left: 30%; top: 0; width: 40%; height: 100%;
+  background: radial-gradient(50% 62% at 50% 34%, rgba(168, 240, 200, .11), rgba(61, 190, 128, .05) 55%, transparent 80%);
+  /* the shaft comes out of the dark: no hard top edge */
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 45%);
+  mask-image: linear-gradient(180deg, transparent, #000 45%);
+  transform-origin: 50% 0;
+  will-change: transform;
+  animation: contact-sway 16s ease-in-out infinite alternate;
+}
+.contact__pool {
+  left: 0; right: 0; top: 150px; height: 440px;
+  background:
+    radial-gradient(24% 26% at 50% 50%, rgba(168, 240, 200, .14), transparent 72%),
+    radial-gradient(closest-side, rgba(61, 190, 128, .26), rgba(61, 190, 128, .07) 52%, transparent 78%);
+}
+@keyframes contact-sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg) scaleX(1.1); } }
+
+/* the stage: the 3D GM's canvas (the mark fills ~80% of it, leaving room to turn and float) */
+.contact__stage {
+  position: relative; width: clamp(440px, 42vw, 620px); aspect-ratio: 16 / 10; max-width: 100%;
+}
+.gm3d canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* no WebGL: the logo itself, centred on the stage (build.css gives it the green) */
+.gm3d__img { position: absolute; left: 10%; top: 12%; width: 80%; height: auto; }
+
+/* ---- the camera: the headline and the statement push in as they arrive, the light rises ---- */
+@supports (animation-timeline: view()) {
+  .contact__head, .contact__quote, .contact__light {
+    animation-timing-function: linear; animation-fill-mode: both;
+    animation-timeline: view();
+  }
+  .contact__head { animation-name: contact-push; animation-range: entry 0% entry 100%; transform-origin: 0 100%; }
+  .contact__quote { animation-name: contact-push; animation-range: entry 0% entry 100%; transform-origin: 0 100%; }
+  .contact__light { animation-name: contact-rise; animation-range: entry 0% entry 80%; }
+}
+@keyframes contact-push { from { transform: scale(1.06); opacity: .4; } to { transform: none; opacity: 1; } }
+@keyframes contact-rise { from { opacity: 0; transform: translateY(-40px) scale(.9); } to { opacity: 1; transform: none; } }
+
+/* ---- footer: one quiet line ---- */
+.contact__foot {
+  margin-top: 128px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  font: 400 14px/24px Inter, system-ui, sans-serif; color: var(--dim);
+}
+.contact__foot a { color: var(--dim); text-decoration: none; transition: color .2s; }
+.contact__foot a:hover { color: var(--accent-lit); }
+
+@media (max-width: 899px) {
+  .contact { --go: 44px; padding: 96px 0 32px; }
+  .contact__ways { margin-top: 40px; }
+  .contact__row { column-gap: 16px; padding: 24px 0; }
+  .contact__label { font-size: 36px; }
+  .contact__handle { gap: 8px; font-size: 14px; }
+  .contact__icon { width: 16px; height: 16px; }
+  .contact__fly svg { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
+  /* the stage first, the statement under it, both on the column */
+  .contact__finale { margin-top: 96px; grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
+  .contact__shot { grid-row: 1; }
+  .contact__quote { grid-row: 2; font-size: min(14.4vw, 72px); }
+  .contact__light { top: calc(50% - 270px); width: 600px; height: 600px; margin-left: -300px; }
+  .contact__pool { top: 100px; height: 340px; }
+  .contact__stage { width: 100%; aspect-ratio: 16 / 11; }
+  .contact__foot { margin-top: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact__fly, .contact__shaft, .contact__head, .contact__quote, .contact__light { animation: none !important; }
+  .contact__go { transform: none; }
+}

@@ -1,0 +1,234 @@
+/* Hero (#top), a film opening. Deep black (#020504 at the edges), one key light (a green back
+   light behind his shoulders), a strong vignette, and a fall to black at the bottom into the
+   next section. Desktop: the portrait right of centre, BUILDER far behind, GABE MILLS huge on
+   the left, clear of the figure. Phone (< 900px): the shot on top, the title below it.
+   Colour only from the build.css tokens. Motion: transform / opacity (and the portrait's own
+   filter during the 1 s exposure on load); the light drift and sweep pause off screen.
+   Green never sits over Gabe: the light is behind him in z-order and masked out above his
+   chest (so his fading suit never shows it), and the rim is a drop-shadow on the cut-out
+   image itself, so it lands only outside his silhouette. */
+.hero {
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --black: #020504;
+  position: relative;
+  height: clamp(720px, 100svh, 1080px);
+  overflow: clip;
+  background: var(--black);
+}
+.hero__in { position: relative; height: 100%; }
+
+/* ---- the stage ---- */
+.hero__stage { position: absolute; inset: 0; pointer-events: none; }
+
+/* depth layers (parallax wrappers, transform only, driven by the page scroll) */
+.hero__wordpx {
+  position: absolute; left: 0; right: 0; top: 9%;
+  display: flex; justify-content: center;
+}
+/* he stands just right of the title: his left edge sits one gap past "MILLS." (2.45 em of the
+   name size), so the type never crosses him at any width; he may run into the right margin */
+.hero {
+  --name: clamp(88px, 13vw, 200px);
+}
+.hero__portraitpx {
+  position: absolute; left: calc(var(--name) * 2.45 + 16px); bottom: 0;
+  height: min(88%, 56vw);
+  display: flex; align-items: flex-end;
+}
+.hero__namepx { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+
+/* the giant word: outline draws on, fills with metal, then a light sweep crosses it */
+.hero__word {
+  display: block; flex: none; overflow: visible;
+  width: min(92vw, 1240px); height: auto;
+  font-family: var(--display); user-select: none;
+}
+.hero__word text { font-size: 404px; text-transform: uppercase; }
+.hero__wordline {
+  fill: none;
+  stroke: rgba(238, 245, 240, .22); stroke-width: 1.2px; vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1600; stroke-dashoffset: 1600;
+  animation:
+    hero-draw 1.6s cubic-bezier(.55, 0, .2, 1) .3s both,
+    hero-stroke .8s ease 2.3s both;
+}
+.hero__wordfill {
+  fill: url(#hero-metal); fill-opacity: 0;
+  animation: hero-fill .8s ease 2.3s both;
+}
+.hero__sweep {
+  transform: translateX(0);
+  animation: hero-sweep 9s cubic-bezier(.45, 0, .3, 1) 3.4s infinite;
+}
+@keyframes hero-draw { to { stroke-dashoffset: 0; } }
+@keyframes hero-stroke { to { stroke: rgba(168, 240, 200, .34); } }
+@keyframes hero-fill { to { fill-opacity: .24; } }
+/* the band crosses in the first 45% of the cycle, then the word rests */
+@keyframes hero-sweep { 0% { transform: translateX(0); } 45%, 100% { transform: translateX(1960px); } }
+
+/* ---- the rig: the key light and the portrait share one box ---- */
+.hero__rig {
+  position: relative; height: 100%;
+  aspect-ratio: 1137 / 1250; /* contain + bottom anchor: any crop sits on the floor uncut */
+  max-width: 100%;
+}
+/* the key light rises first, then drifts very slowly. It is a BACK light: it glows around his
+   head and shoulders and is gone by mid-chest, so where the suit dissolves into the dark at the
+   bottom there is only black behind it (no green showing through the suit) */
+.hero__light {
+  position: absolute; left: 50%; top: -14%;
+  width: 210%; height: 112%; margin-left: -105%;
+  opacity: 0; transform: scale(.82);
+  -webkit-mask-image: linear-gradient(180deg, #000 50%, transparent 74%);
+  mask-image: linear-gradient(180deg, #000 50%, transparent 74%);
+  animation: hero-light 1.1s cubic-bezier(.3, 0, .2, 1) .1s both;
+}
+.hero__halo, .hero__beam { position: absolute; display: block; will-change: transform; }
+.hero__halo {
+  inset: 0;
+  background:
+    radial-gradient(30% 30% at 50% 40%, rgba(168, 240, 200, .16), transparent 70%),
+    radial-gradient(closest-side at 50% 48%, rgba(61, 190, 128, .36), rgba(61, 190, 128, .1) 48%, transparent 78%);
+  animation: hero-drift 14s ease-in-out 1.8s infinite alternate;
+}
+/* a soft shaft falling from high behind him onto the shoulders */
+.hero__beam {
+  left: 38%; top: -30%; width: 34%; height: 110%;
+  background: radial-gradient(closest-side, rgba(168, 240, 200, .09), transparent 80%);
+  transform-origin: 50% 0; transform: rotate(-14deg);
+  animation: hero-beam 18s ease-in-out 1.8s infinite alternate;
+}
+@keyframes hero-light { to { opacity: 1; transform: none; } }
+@keyframes hero-drift { from { transform: none; } to { transform: translate3d(2%, -2%, 0) scale(1.05); } }
+@keyframes hero-beam { from { transform: rotate(-14deg); } to { transform: rotate(-8deg) scaleX(1.12); } }
+
+.hero__portrait { position: relative; width: 100%; height: 100%; }
+/* the cut-out dissolves into the dark at the bottom. The box reaches 24px past the image on the
+   top and sides so the rim's glow is not clipped by the mask */
+.hero__cut {
+  position: absolute; inset: -24px -24px 0; padding: 24px 24px 0;
+  -webkit-mask-image: linear-gradient(180deg, #000 66%, transparent 95%);
+  mask-image: linear-gradient(180deg, #000 66%, transparent 95%);
+}
+.hero__cut picture, .hero__cut img { display: block; width: 100%; height: 100%; }
+/* the rim lives on the image itself: a drop-shadow is drawn only where the image is transparent,
+   so it is a thin mint edge on his outline and never a wash over the suit or skin. The exposure
+   is brightness / contrast plus a light desaturation: the photo's skin read too tan against
+   the dark scene (Gabe, 3 Nov 2026), so saturation is down ~13% and contrast eased. No hue shift. */
+.hero__cut img {
+  --rim: drop-shadow(0 0 1px rgba(168, 240, 200, .42)) drop-shadow(0 -2px 12px rgba(61, 190, 128, .26));
+  object-fit: contain; object-position: bottom center;
+  filter: brightness(.97) contrast(1.03) saturate(.87) var(--rim);
+  animation: hero-expose .95s cubic-bezier(.4, 0, .2, 1) 1.15s both;
+}
+/* he arrives as a dark silhouette in the back light, then the exposure comes up */
+@keyframes hero-expose {
+  from { filter: brightness(.18) contrast(1.12) saturate(.87) var(--rim); }
+  to { filter: brightness(.97) contrast(1.03) saturate(.87) var(--rim); }
+}
+
+/* ---- the grade: vignette and the fall to black ---- */
+.hero__vignette {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(120% 95% at 58% 38%, transparent 42%, rgba(2, 5, 4, .62) 74%, var(--black) 100%),
+    linear-gradient(180deg, rgba(2, 5, 4, .7), transparent 14%, transparent 70%, var(--black) 97%);
+}
+/* as the page scrolls away the whole shot returns to black */
+.hero__out { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: var(--black); opacity: 0; }
+
+/* ---- the title, bottom left, clear of the figure. ONE left edge: the .bp-wrap column.
+   Rhythm (8px): name -> line 32, line -> buttons 40, buttons -> Massed Compute 24. ---- */
+.hero__left {
+  position: absolute; left: 0; bottom: clamp(64px, 9vh, 104px);
+  display: flex; flex-direction: column; align-items: flex-start;
+  max-width: 42%;
+  pointer-events: auto;
+}
+.hero__name { margin: 0; font-size: var(--name); line-height: .9; }
+/* optical alignment: Anton's side bearings (G .031em, M .038em) pulled back so the ink of
+   each line sits exactly on the column edge */
+.hero__name .bp-line:nth-child(2) { margin-left: -.031em; } /* child 1 is Words' screen-reader copy */
+.hero__name .bp-line:last-child { margin-left: -.038em; word-spacing: -.234em; } /* "MILLS." : the period is its own word, set tight */
+.hero__pos {
+  margin: 32px 0 0; max-width: 62ch;
+  font: 400 17px/1.6 Inter, system-ui, sans-serif; color: rgba(238, 245, 240, .78);
+}
+/* two Words lines so a phone breaks after "development ·"; on wider screens they run as one */
+.hero__pos .bp-line { display: inline; }
+.hero__pos .bp-line + .bp-line { margin-left: .28em; }
+.hero__cta { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 16px; }
+/* the buttons in sentence case at a readable size (no tiny tracked caps in the hero) */
+.hero .bp-link {
+  height: 48px; padding: 0 22px; gap: 10px;
+  font: 600 15px/1 Inter, system-ui, sans-serif; letter-spacing: 0; text-transform: none;
+}
+.hero__now {
+  margin-top: 24px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 400 15px/24px Inter, system-ui, sans-serif;
+  color: var(--dim); text-decoration: none; transition: color .2s;
+}
+.hero__now b { font-weight: 500; color: var(--ink); transition: color .2s; }
+.hero__now span { display: inline-block; transition: transform .25s var(--ease); }
+.hero__now:hover, .hero__now:hover b { color: var(--accent-lit); }
+.hero__now:hover span { transform: translate(3px, -3px); }
+
+/* ---- the camera: push in on three depth layers, then fall to black ---- */
+@supports (animation-timeline: scroll()) {
+  .hero__wordpx, .hero__portraitpx, .hero__namepx, .hero__out {
+    animation-timing-function: linear; animation-fill-mode: both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 100vh;
+  }
+  .hero__wordpx, .hero__portraitpx, .hero__namepx { will-change: transform; }
+  .hero__wordpx { animation-name: hero-cam-word; }
+  .hero__portraitpx { animation-name: hero-cam-portrait; transform-origin: 50% 100%; }
+  .hero__namepx { animation-name: hero-cam-name; }
+  .hero__out { animation-name: hero-cam-out; animation-range: 15vh 95vh; }
+}
+@keyframes hero-cam-word { to { transform: translate3d(0, 10vh, 0) scale(1.03); } }
+@keyframes hero-cam-portrait { to { transform: translate3d(0, 4vh, 0) scale(1.12); } }
+@keyframes hero-cam-name { to { transform: translate3d(0, -16vh, 0); opacity: .2; } }
+@keyframes hero-cam-out { to { opacity: .92; } }
+
+/* ---- phone / narrow: the shot on top, the title in the dark below it ---- */
+@media (max-width: 899px) {
+  .hero { height: auto; min-height: 100svh; padding: 72px 0 56px; }
+  .hero__in { height: auto; display: flex; flex-direction: column; align-items: flex-start; }
+  .hero__stage { position: relative; inset: auto; width: 100%; height: min(108vw, 470px); }
+  .hero__wordpx { top: 6%; }
+  .hero__word { width: 100%; }
+  .hero__portraitpx { left: 0; right: 0; height: 94%; justify-content: center; }
+  .hero__portraitpx { transform-origin: 50% 100%; }
+  .hero__cut {
+    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 92%);
+    mask-image: linear-gradient(180deg, #000 60%, transparent 92%);
+  }
+  .hero__namepx { position: relative; inset: auto; width: 100%; margin-top: -24px; }
+  .hero__left { position: static; max-width: none; }
+  .hero { --name: min(27vw, 136px); }
+  .hero__pos { margin-top: 24px; }
+  .hero__pos .bp-line { display: block; }
+  .hero__pos .bp-line + .bp-line { margin-left: 0; }
+  .hero__cta { margin-top: 32px; gap: 12px; }
+  .hero__now { margin-top: 24px; }
+  .hero__vignette {
+    background:
+      radial-gradient(130% 70% at 50% 30%, transparent 40%, rgba(2, 5, 4, .6) 76%, var(--black) 100%),
+      linear-gradient(180deg, rgba(2, 5, 4, .7), transparent 12%, transparent 80%, var(--black) 99%);
+  }
+  @keyframes hero-cam-word { to { transform: translate3d(0, 8vh, 0) scale(1.03); } }
+  @keyframes hero-cam-portrait { to { transform: translate3d(0, 3vh, 0) scale(1.1); } }
+  @keyframes hero-cam-name { to { transform: translate3d(0, -8vh, 0); opacity: .4; } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__wordpx, .hero__portraitpx, .hero__namepx, .hero__out, .hero__light, .hero__halo, .hero__beam,
+  .hero__sweep, .hero__wordline, .hero__wordfill, .hero__cut img { animation: none !important; }
+  .hero__light { opacity: 1; transform: none; }
+  .hero__wordline { stroke-dashoffset: 0; stroke: rgba(168, 240, 200, .34); }
+  .hero__wordfill { fill-opacity: .24; }
+  .hero__sweep { display: none; }
+  .hero__out { opacity: 0; }
+}
