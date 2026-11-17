@@ -145,7 +145,7 @@ export const projects: Project[] = [
       "Should I freak? A live answer from eight public outage feeds and a globe.",
     shot: "/showcase/previews/shouldifreak.jpg",
     shotAlt:
-      "Should I Freak dashboard — the answer 'Not really.' beside a globe of live reports and a feed of power, bank and internet outages",
+      "Should I Freak dashboard — the answer 'A little.' beside a dot-matrix globe of live reports and a feed of war, unrest, power, bank and aviation reports",
     loop: "/showcase/previews/shouldifreak.mp4",
   },
 
