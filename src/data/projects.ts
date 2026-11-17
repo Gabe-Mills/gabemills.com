@@ -123,29 +123,30 @@ export const projects: Project[] = [
     loop: "/showcase/previews/ricochet-tanks.mp4",
   },
   {
-    id: "gcoolers",
-    title: "Gcoolers",
-    url: "https://gcoolers.com/",
-    host: "gcoolers.com",
+    id: "should-i-freak",
+    title: "Should I Freak",
+    url: "https://shouldifreak.com/",
+    host: "shouldifreak.com",
     module: "04",
     accent: "green-cyan",
-    tag: "Open source · macOS",
-    role: "Author and maintainer",
-    status: "v3.06 · MIT",
+    tag: "Live dashboard · public data",
+    role: "Designer and builder",
+    status: "Live · 8 feeds",
     summary:
-      "A thermal governor for Apple Silicon Macs — fan curves, live temperatures, and a Meeting Mode that keeps the fans quiet on calls.",
+      "A one-screen dashboard that answers one question — should I freak? — from live power, internet, bank, cloud, conflict, disaster and aviation feeds.",
     problem:
-      "Apple Silicon Macs ramp their fans on a schedule you don't control, and the tools that fix it want either a kernel extension or a subscription.",
+      "When a headline says banks or the internet are down, there's no single place that shows how big it really is, from sources you can check.",
     outcome:
-      "A user-space daemon with Silent, Balanced, Frost and Max profiles, a menu-bar widget graphing CPU and GPU temperature, and a one-line Homebrew install. No network calls — the state never leaves the machine.",
-    stack: ["IOKit (user space)", "Local daemon", "Homebrew tap", "Menu-bar app"],
-    glow: "255, 196, 92",
+      "A live answer from an explained 0–100 index, a draggable globe of located reports, ThousandEyes' internet map, bank outage clusters from news and payment status pages, and a feed where every report links to its publisher. Refreshes every minute.",
+    stack: ["Node", "Canvas globe", "IODA", "GDACS", "Statuspage APIs"],
+    glow: "76, 208, 138",
     glowClass: "green-status-glow",
     blurb:
-      "Fan curves and live temperatures for Apple Silicon, entirely in user space.",
-    shot: "/showcase/previews/gcoolers.jpg",
+      "Should I freak? A live answer from eight public outage feeds and a globe.",
+    shot: "/showcase/previews/shouldifreak.jpg",
     shotAlt:
-      "Gcoolers homepage — the wordmark above a live terminal panel graphing CPU and GPU temperature history",
-    loop: "/showcase/previews/gcoolers.mp4",
+      "Should I Freak dashboard — the answer 'Not really.' beside a globe of live reports and a feed of power, bank and internet outages",
+    loop: "/showcase/previews/shouldifreak.mp4",
   },
+
 ];

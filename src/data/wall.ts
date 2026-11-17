@@ -26,7 +26,7 @@ const tile = (id: string, title: string, url: string, kind: string): WallTile =>
 });
 
 export const wallTiles: WallTile[] = [
-  tile("gcoolers", "Gcoolers", "https://gcoolers.com/", "Open-source macOS thermal governor"),
+  tile("shouldifreak", "Should I Freak", "https://shouldifreak.com/", "Live world disruption dashboard"),
   tile("crispergames", "Ricochet Tanks", "https://crispergames.com/", "3D tank game, 500 missions"),
   tile("prism", "Prism SMP", "https://theprismsmp.com/", "Minecraft server site"),
   tile("leland", "Leland Plays Piano", "https://lelandplayzpiano.com/", "Musician site"),
