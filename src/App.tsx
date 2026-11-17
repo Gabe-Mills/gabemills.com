@@ -3,17 +3,14 @@ import BuildRoot from "./build/BuildRoot";
 import Hero from "./build/sections/Hero";
 import Work from "./build/sections/Work";
 import Numbers from "./build/sections/Numbers";
-import Reel from "./build/sections/Reel";
-import GitHub from "./build/sections/GitHub";
 import Stack from "./build/sections/Stack";
 import Contact from "./build/sections/Contact";
 
 /**
- * Branch agent-build: the page builds itself as you scroll, assembled by a swarm of
- * cursors named after the AI tools Gabe actually works with (src/build). Every element
- * is driven by its own scroll position, so scrolling back up un-builds it.
- * The engraved story lives on branch intro-engraved; the original site's sections are
- * still in src/components.
+ * v6 "simplify" (17 Nov 2026): the page builds itself, but only the hero. A named crew of
+ * four cursors builds it on load (src/build/engine.ts); everything below simply rises in.
+ * Five sections: hero, work, numbers, stack, contact (with the 3D GM). The reel and the GitHub
+ * repo cards were cut; the engraved story lives on branch intro-engraved.
  */
 export default function App() {
   return (
@@ -24,8 +21,6 @@ export default function App() {
           <Hero />
           <Work />
           <Numbers />
-          <Reel />
-          <GitHub />
           <Stack />
           <Contact />
         </BuildRoot>

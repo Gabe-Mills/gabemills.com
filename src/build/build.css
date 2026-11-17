@@ -69,6 +69,14 @@ img[src*="logo-gm"] { filter: hue-rotate(118deg) saturate(.85) brightness(1.05);
 }
 [data-build="fade"] { opacity: var(--e); transform: translateY(calc((1 - var(--e)) * 14px)); }
 
+/* below the hero nothing is built by the crew: pieces simply rise and fade in (engine marks
+   them data-quiet). Words keep their per-word rise, driven straight by the reveal. */
+[data-quiet][data-build="box"] {
+  opacity: var(--e); filter: none;
+  transform: translate3d(0, calc((1 - var(--m)) * 24px), 0);
+}
+[data-quiet][data-build="text"]:not(.bp-words) { clip-path: none; opacity: var(--e); }
+
 /* ---- kinetic words (Words.tsx): each word rises out of its own masked line as the crew
    types. --m comes from the engine on the parent; --n words, --i this word's index. ---- */
 .bp-words[data-build="text"] { clip-path: none; width: auto; }

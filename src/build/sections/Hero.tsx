@@ -41,6 +41,12 @@ export function LinkedInIcon({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * v6 "simplify": the one live build on the page. A crew of four named cursors builds it on
+ * load, one step each (engine.ts): Claude drags in the portrait (0.4 s), Cursor types the name
+ * (1.5 s), Codex writes the line (2.7 s), ChatGPT drops the links (3.3 s); then the page is
+ * published and the chrome leaves. It plays once per page load.
+ */
 export default function Hero() {
   return (
     <section id="top" className="hero">
@@ -82,7 +88,8 @@ export default function Hero() {
               {/* the key light: a green back light behind his head and shoulders, rising first. It
                   sits BEHIND the portrait in z-order and fades out above his chest */}
               <div className="hero__light"><i className="hero__halo" /><i className="hero__beam" /></div>
-              <div className="hero__portrait" data-build="box" data-from="right" data-mode="load" data-delay="0.35" data-span="0.85" data-label="portrait.webp">
+              <div className="hero__portrait" data-build="box" data-from="right" data-mode="load" data-delay="0.4" data-span="1.1"
+                data-label="portrait.webp" data-log="dropped in portrait.webp">
                 <div className="hero__cut">
                   <picture>
                     <source media="(max-width: 899px)" srcSet="/build/portrait-m.webp" />
@@ -98,10 +105,11 @@ export default function Hero() {
           <div className="hero__left">
             {/* kinetic words on the load clock: GABE, MILLS, then the period rise in turn */}
             <Words as="h1" className="bp-display hero__name" text={"Gabe\nMills *.*"}
-              delay={1.55} data-mode="load" data-span="1.1" data-label="h1" />
+              delay={1.5} data-mode="load" data-span="1.3" data-label="h1 · name" data-log="typed the name" />
             <Words as="p" className="hero__pos" text={"Software development ·\nnative Apple apps · creative tech"}
-              delay={2.2} data-mode="load" data-span="0.8" data-label="p" />
-            <div className="hero__cta" data-build="box" data-from="below" data-mode="load" data-delay="2.45" data-span="0.7" data-label="2 links">
+              delay={2.7} data-mode="load" data-span="0.9" data-label="p · tagline" data-log="wrote the tagline" />
+            <div className="hero__cta" data-build="box" data-from="below" data-mode="load" data-delay="3.3" data-span="0.9"
+              data-label="2 links" data-log="wired up GitHub + LinkedIn">
               <a className="bp-link" href={profile.url} target="_blank" rel="noopener noreferrer">
                 <GitHubIcon className="h-4 w-4" /> GitHub
               </a>
@@ -111,7 +119,7 @@ export default function Hero() {
             </div>
             <a className="hero__now" href={MASSED} target="_blank" rel="noopener noreferrer"
               aria-label="Currently software development at Massed Compute (opens in a new tab)"
-              data-build="fade" data-mode="load" data-delay="2.8" data-span="0.4">
+              data-build="fade" data-mode="load" data-delay="4.0" data-span="0.5">
               Now at <b>Massed Compute</b> <span aria-hidden="true">↗</span>
             </a>
           </div>

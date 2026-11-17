@@ -1,12 +1,17 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import "./build.css";
-import { BuildEngine } from "./engine";
+import { BuildEngine, type CrewMember } from "./engine";
 
 /**
- * One swarm, no named leads: every cursor builds (Gabe's call). Cursor colours are the
- * page's metallic greens and silvers, so the crew reads as part of the wash.
+ * The hero crew: four named cursors, the AI tools Gabe builds with. Each takes one step of the
+ * hero build. Colours are the page's metallic greens and silvers, so the crew reads as part of it.
  */
-const COLORS = ["#A8F0C8", "#5ED39A", "#D9E4DF", "#3DBE80", "#BFD8CB", "#7FE0A8", "#E8F5EE", "#2FA36B"];
+const CREW: CrewMember[] = [
+  { name: "Claude", color: "#A8F0C8" },
+  { name: "Cursor", color: "#D9E4DF" },
+  { name: "Codex", color: "#5ED39A" },
+  { name: "ChatGPT", color: "#BFD8CB" },
+];
 
 /** Wraps the page: mounts the overlay canvas and runs the build engine over every [data-build]. */
 export default function BuildRoot({ children }: { children: ReactNode }) {
@@ -15,21 +20,19 @@ export default function BuildRoot({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!root.current || !canvas.current) return;
-    const engine = new BuildEngine(canvas.current, COLORS);
-    engine.scan(root.current);
-    // rescan once fonts and late content (videos, data) have settled
-    const again = () => engine.scan(root.current!);
+    const e = new BuildEngine(canvas.current, CREW);
+    e.scan(root.current);
+    // rescan once fonts and late content have settled
+    const again = () => e.scan(root.current!);
     document.fonts?.ready.then(again);
     const t = setTimeout(again, 1200);
-    (window as unknown as { __build: BuildEngine }).__build = engine;
-    // looping motion graphics (sheens, scans, pings, marquees) pause in sections that are
-    // off screen: the sheen repaints its text every frame, and nobody sees a hidden loop
+    // looping motion (sheens, marquees) pauses in sections that are off screen
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.target.toggleAttribute("data-off", !e.isIntersecting)),
+      (entries) => entries.forEach((x) => x.target.toggleAttribute("data-off", !x.isIntersecting)),
       { rootMargin: "120px 0px" },
     );
     root.current.querySelectorAll("section").forEach((s) => io.observe(s));
-    return () => { clearTimeout(t); io.disconnect(); engine.destroy(); };
+    return () => { clearTimeout(t); io.disconnect(); e.destroy(); };
   }, []);
 
   return (
